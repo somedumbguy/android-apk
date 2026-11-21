@@ -1,6 +1,7 @@
 package com.example.hello.architecture;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noFields;
 
 import com.example.hello.app.AppContainer;
 import com.example.hello.auth.MockAuthProvider;
@@ -165,5 +166,29 @@ public class ArchitectureTest {
                 .orShould()
                 .callConstructor(Date.class)
                 .because("pass a Clock in instead, so tests control time"));
+    }
+
+    /** Admin lives in a separate client backed by server-side roles, never in this app. See docs/security.md. */
+    @Test
+    public void noAdminCodeInTheConsumerApp() {
+        check(noClasses()
+                .should()
+                .haveSimpleNameContaining("Admin")
+                .because("anything in the APK can be found and switched on"));
+    }
+
+    /** Keys belong on the backend: anything in the APK is public. Catches the obvious cases. */
+    @Test
+    public void noHardCodedSecrets() {
+        check(noFields()
+                .that()
+                .areStatic()
+                .and()
+                .areFinal()
+                .and()
+                .haveRawType(String.class)
+                .should()
+                .haveNameMatching("(?i).*(api_?key|secret|password|passwd|token|credential).*")
+                .because("secrets stay on the server; see docs/security.md"));
     }
 }

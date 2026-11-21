@@ -19,6 +19,8 @@ formatting.
 | No warnings | Java compiler warnings are errors | `-Werror` |
 | Android correctness | Any Android Lint warning fails the build | Lint (`warningsAsErrors`) |
 | Tested | Domain coverage at least 90% of lines and 80% of branches | JaCoCo (`jacocoTestCoverageVerification`) |
+| No secrets in the app | API keys and credentials live on the backend; no key, secret, password or token string constants | gitleaks (CI, pre-push); `ArchitectureTest` |
+| No admin in the app | Admin is a separate client with server-side roles; no `*Admin*` classes here | `ArchitectureTest` |
 
 ## Where it runs
 
@@ -44,6 +46,13 @@ formatting.
 
 Rules change only when the design deliberately changes. Edit the rule and its reason in
 `ArchitectureTest` or the build file, and update this table in the same change.
+
+## Security
+
+Anything in the APK is public. Read [docs/security.md](docs/security.md) before adding
+anything that talks to a server, stores credentials or changes app-wide settings. In short:
+secrets live on the backend, app-wide settings are read-only remote config, and admin is a
+separate client whose permissions the server checks on every request.
 
 ## Store listing
 
