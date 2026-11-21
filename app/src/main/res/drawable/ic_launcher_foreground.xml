@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A lime barbell, inside the adaptive icon's 66dp safe zone. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:fillColor="#D4FF3A" android:pathData="M24,52h60v4h-60z" />
+    <path android:fillColor="#D4FF3A" android:pathData="M36,37h6a1,1 0,0 1,1 1v32a1,1 0,0 1,-1 1h-6a1,1 0,0 1,-1 -1v-32a1,1 0,0 1,1 -1z" />
+    <path android:fillColor="#D4FF3A" android:pathData="M66,37h6a1,1 0,0 1,1 1v32a1,1 0,0 1,-1 1h-6a1,1 0,0 1,-1 -1v-32a1,1 0,0 1,1 -1z" />
+    <path android:fillColor="#D4FF3A" android:pathData="M29,44h5v20h-5z" />
+    <path android:fillColor="#D4FF3A" android:pathData="M74,44h5v20h-5z" />
+</vector>

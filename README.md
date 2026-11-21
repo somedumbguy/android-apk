@@ -1,80 +1,85 @@
 # Overload
 
-A frictionless weightlifting log that uses AI to predict your next weight and
-help with data entry. ("Overload" is a working name.)
-
-## What works
+A frictionless weightlifting log built around progressive overload. ("Overload" is a
+working name.)
 
 - **Home:** personal records with forecast dates for the next plate milestone, today's
-  target with a "PR attempt" badge, streak, weekly goal ring, 7-day volume chart.
+  target with a "PR attempt" badge, streak, weekly goal ring and 7-day volume chart.
 - **Intensity:** Cruise / Build / Send it. Changing it updates every prescription and
   forecast date live.
-- **Workout:** sets are pre-filled. Tap ✓ if you did it as planned, or tap the reps to record
-  what you actually did. Includes plate math, warm-up sets and an auto-starting rest timer.
-  Finishing saves the session, detects PRs and feeds the next prescription.
+- **Workout:** sets are pre-filled. Tap a set if you did it as planned, or tap its reps to
+  record what you actually did. Includes plate math, warm-ups and an auto-starting rest
+  timer. Finishing saves the session, detects PRs and feeds the next prescription.
 
-## Code vs AI
+## Build and test
 
-Anything that can be calculated is plain, deterministic code in `engine/`:
+Requires JDK 17+ and the Android SDK (set `sdk.dir` in `local.properties`, or `ANDROID_HOME`).
 
-| File | Does |
+```bash
+./gradlew test             # all unit tests (domain + app), no device needed
+./gradlew lintDebug        # Android Lint
+./gradlew assembleDebug    # app/build/outputs/apk/debug/app-debug.apk
+```
+
+To sign debug builds with a shared key (so builds install as updates and keep the same
+fingerprint for Google Sign-In), copy `keystore.properties.example` to
+`keystore.properties` and point it at your key. Both files are git-ignored except the example.
+
+## Architecture
+
+Two modules, so the rules are enforced by the build, not by convention:
+
+```
+domain/   Pure Java. No Android. All training logic lives here.
+app/      Android: storage, sign-in, screens. Depends on domain.
+```
+
+### `domain` (pure Java, unit-tested on the JVM)
+
+| Package | Contains |
 | --- | --- |
-| `ProgressionEngine.java` | Next weight and reps. Linear (3×5) and double progression (3×8–12), 10% deload after 3 stalls |
-| `Intensity.java` | Jump size per successful session: 2.5 / 5 / 7.5 lb (doubled for deadlifts) |
-| `Forecast.java` | Projected date for the next plate milestone (135, 225, 315, 405, ...) |
-| `PlateMath.java` | Plates per side and warm-up sets |
+| `model` | `Exercise` (stable id, built with a builder), `SetRecord`, `Suggestion`, `PersonalRecord`, `WorkoutPlan` |
+| `catalog` | The known exercises and the Push Day plan |
+| `progression` | `ProgressionStrategy` interface, `LinearProgression`, `DoubleProgression`, `Intensity`, `ProgressionEngine` |
+| `forecast` | `Forecaster`: projected date for the next plate milestone |
+| `plates` | `PlateMath`: plates per side and warm-ups, for any bar and plate set |
+| `session` | `WorkoutSession`: all set state during a workout |
+| `history` | Ports: `WorkoutRepository`, `SettingsRepository` |
+| `training` | `TrainingService`: the use cases (suggest, forecast, start and complete a workout) |
 
-AI is reserved for what code can't do well, such as recognising gym equipment from the
-camera and understanding spoken or typed logs.
+Test fakes (`InMemoryWorkoutRepository`, fixed clocks, `TestTraining`) live in
+`domain/src/testFixtures` and are shared by both modules' tests.
+
+### `app` (Android)
+
+| Package | Contains |
+| --- | --- |
+| `app` | `AppContainer`: the composition root where everything is created and wired |
+| `data` | `SharedPrefs*Repository` implementations, `SeedData` demo history |
+| `auth` | `AuthProvider` interface, `MockAuthProvider` |
+| `ui/home`, `ui/intensity`, `ui/workout` | A presenter (pure Java, tested) produces state; a view draws it |
+| `ui/common`, `ui/widget`, `ui/format` | Shared UI building blocks, chart views and text formatting |
+
+### Principles
+
+- **Dependency injection without a framework.** `AppContainer` builds every object and
+  passes dependencies through constructors. Activities, which Android creates, fetch it
+  with `AppContainer.from(context)`. Swap an implementation there and nowhere else.
+- **Interfaces where things vary:** storage, sign-in and progression schemes. A new
+  scheme (5/3/1, GZCLP) is a new `ProgressionStrategy` registered in `ProgressionEngine`,
+  with no changes elsewhere.
+- **Deterministic code over AI** wherever an answer can be calculated: prescriptions,
+  deloads, forecasts, plate math, PR detection. AI is reserved for things code can't do,
+  such as recognising equipment from the camera or understanding spoken logs. Those will
+  plug in behind interfaces, with a mock first, like sign-in.
+- **Time is injected** (`java.time.Clock`), so tests are repeatable.
+- **Views have no logic.** Presenters turn domain data into plain state objects, which are
+  unit-tested; views only draw them.
 
 ## Placeholders to replace
 
 | What | Where | Replace with |
 | --- | --- | --- |
-| Sign-in | `auth/MockAuthProvider.java` via `auth/Auth.java` | Google Sign-In |
-| Starting history | `data/SampleData.java` | Replaced per exercise once you log it |
-| Streak, weekly goal, earlier days' volume | `data/SampleData.java` | Real workout history |
-
-## Authentication
-
-The app only talks to the `AuthProvider` interface in
-`src/com/example/hello/auth/`:
-
-| File | Purpose |
-| --- | --- |
-| `AuthProvider.java` | Interface: `getCurrentUser()`, `signIn()`, `signOut()`, `isMock()` |
-| `User.java` | The signed-in user (id, display name, email) |
-| `UserStore.java` | Remembers the user between launches |
-| `MockAuthProvider.java` | Fake provider: Google-style sheet, signs in as `Test User` |
-| `Auth.java` | Chooses the provider. **This is the only line to change.** |
-
-To switch to real Google Sign-In, add a `GoogleAuthProvider` that implements
-`AuthProvider` with Credential Manager and the Web client ID from Google Cloud
-Console, then return it from `Auth.create()`.
-
-## Build
-
-On Ubuntu:
-
-```bash
-sudo apt-get install -y android-sdk android-sdk-platform-23 apksigner dalvik-exchange
-./build.sh
-```
-
-The signed APK is written to `build/HelloWorld.apk`.
-
-## Signing key
-
-`build.sh` creates a test key at `build/test.keystore` if none exists. Keys are not
-committed. To sign with your own key:
-
-```bash
-KEYSTORE=/path/to/key.keystore KS_PASS=yourpassword ./build.sh
-```
-
-The key's SHA-1 fingerprint must match the Android OAuth client in Google Cloud
-Console for Google Sign-In to work. Print it with:
-
-```bash
-keytool -list -v -keystore build/test.keystore -storepass android | grep SHA1
-```
+| Sign-in | `MockAuthProvider`, wired in `AppContainer` | Google Sign-In (Credential Manager) |
+| Starting history | `SeedData.demo()` | Replaced per exercise once you log it |
+| Streak, weekly goal, earlier days' volume | `SeedData.demo()` | Real workout history |
