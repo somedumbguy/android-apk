@@ -91,7 +91,7 @@ public final class MockAuthProvider implements AuthProvider {
         tag.setLetterSpacing(0.08f);
         sheet.addView(tag);
 
-        TextView title = Views.text(activity, "Sign in to Hello World", 22, 0xFF1F1F1F);
+        TextView title = Views.text(activity, "Sign in to Overload", 22, 0xFF1F1F1F);
         title.setPadding(0, Views.dp(activity, 8), 0, Views.dp(activity, 20));
         sheet.addView(title);
 

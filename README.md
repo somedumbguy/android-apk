@@ -1,8 +1,20 @@
-# Hello World Android app
+# Overload
 
-A minimal Android app with a sign-in flow. Authentication currently uses a mock
-provider that signs in as a fake test user, so development can continue before
-Google Sign-In is set up.
+A frictionless weightlifting log that uses AI to predict your next weight and
+help with data entry. ("Overload" is a working name.)
+
+Round one is the sign-in and home screens: an AI coach card with today's
+suggested weight, streak, weekly goal ring, 7-day volume chart, a voice-logging
+entry point and personal records. Buttons for features that don't exist yet
+show a "coming in round two" message.
+
+## Placeholders to replace
+
+| What | Where | Replace with |
+| --- | --- | --- |
+| Sign-in | `auth/MockAuthProvider.java` via `auth/Auth.java` | Google Sign-In |
+| Weight prediction | `ai/RuleBasedPredictor.java` via `ai/Predictors.java` | An AI model |
+| Training history | `data/SampleData.java` | Stored workouts |
 
 - Package: `com.example.hello`
 - Min Android version: 6.0 (API 23), target API 34
