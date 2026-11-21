@@ -3,15 +3,18 @@ package com.example.hello;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import com.example.hello.auth.Auth;
 import com.example.hello.auth.AuthProvider;
 import com.example.hello.auth.User;
+import com.example.hello.data.WorkoutStore;
 
 public class MainActivity extends Activity {
     private AuthProvider auth;
+    private WorkoutStore store;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +24,12 @@ public class MainActivity extends Activity {
         getWindow().getDecorView().setSystemUiVisibility(0);
 
         auth = Auth.create(this);
+        store = new WorkoutStore(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         render();
     }
 
@@ -31,8 +40,16 @@ public class MainActivity extends Activity {
                 @Override public void run() { signIn(); }
             }));
         } else {
-            setContentView(HomeScreen.create(this, user, new HomeScreen.Listener() {
+            setContentView(HomeScreen.create(this, user, store, new HomeScreen.Listener() {
                 @Override public void onAvatarTapped() { confirmSignOut(); }
+                @Override public void onStartWorkout() {
+                    startActivity(new Intent(MainActivity.this, WorkoutActivity.class));
+                }
+                @Override public void onIntensityTapped() {
+                    IntensitySheet.show(MainActivity.this, store, new Runnable() {
+                        @Override public void run() { render(); }
+                    });
+                }
             }));
         }
     }

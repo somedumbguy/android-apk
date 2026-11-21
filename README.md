@@ -3,22 +3,37 @@
 A frictionless weightlifting log that uses AI to predict your next weight and
 help with data entry. ("Overload" is a working name.)
 
-Round one is the sign-in and home screens: an AI coach card with today's
-suggested weight, streak, weekly goal ring, 7-day volume chart, a voice-logging
-entry point and personal records. Buttons for features that don't exist yet
-show a "coming in round two" message.
+## What works
+
+- **Home:** personal records with forecast dates for the next plate milestone, today's
+  target with a "PR attempt" badge, streak, weekly goal ring, 7-day volume chart.
+- **Intensity:** Cruise / Build / Send it. Changing it updates every prescription and
+  forecast date live.
+- **Workout:** sets are pre-filled. Tap ✓ if you did it as planned, or tap the reps to record
+  what you actually did. Includes plate math, warm-up sets and an auto-starting rest timer.
+  Finishing saves the session, detects PRs and feeds the next prescription.
+
+## Code vs AI
+
+Anything that can be calculated is plain, deterministic code in `engine/`:
+
+| File | Does |
+| --- | --- |
+| `ProgressionEngine.java` | Next weight and reps. Linear (3×5) and double progression (3×8–12), 10% deload after 3 stalls |
+| `Intensity.java` | Jump size per successful session: 2.5 / 5 / 7.5 lb (doubled for deadlifts) |
+| `Forecast.java` | Projected date for the next plate milestone (135, 225, 315, 405, ...) |
+| `PlateMath.java` | Plates per side and warm-up sets |
+
+AI is reserved for what code can't do well, such as recognising gym equipment from the
+camera and understanding spoken or typed logs.
 
 ## Placeholders to replace
 
 | What | Where | Replace with |
 | --- | --- | --- |
 | Sign-in | `auth/MockAuthProvider.java` via `auth/Auth.java` | Google Sign-In |
-| Weight prediction | `ai/RuleBasedPredictor.java` via `ai/Predictors.java` | An AI model |
-| Training history | `data/SampleData.java` | Stored workouts |
-
-- Package: `com.example.hello`
-- Min Android version: 6.0 (API 23), target API 34
-- No Gradle: built directly with `aapt`, `dx` and `apksigner`
+| Starting history | `data/SampleData.java` | Replaced per exercise once you log it |
+| Streak, weekly goal, earlier days' volume | `data/SampleData.java` | Real workout history |
 
 ## Authentication
 

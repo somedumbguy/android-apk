@@ -1,13 +1,19 @@
 package com.example.hello;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -84,5 +90,36 @@ public final class Views {
         b.setBackground(ripple(bg, 0x33808080));
         b.setPadding(dp(c, 24), 0, dp(c, 24), 0);
         return b;
+    }
+
+    /** Shows content as a bottom sheet that slides up, with rounded top corners. */
+    public static Dialog showSheet(Activity a, View content, int bgColor) {
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(bgColor);
+        float r = dp(a, 28);
+        bg.setCornerRadii(new float[] {r, r, r, r, 0, 0, 0, 0});
+        content.setBackground(bg);
+
+        Dialog d = new Dialog(a);
+        d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        d.setContentView(content);
+        Window w = d.getWindow();
+        w.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        w.setGravity(Gravity.BOTTOM);
+        w.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        w.setWindowAnimations(android.R.style.Animation_InputMethod);
+        d.show();
+        return d;
+    }
+
+    /** The small grey bar at the top of a bottom sheet. */
+    public static View sheetHandle(Context c, int color) {
+        View handle = new View(c);
+        handle.setBackground(rounded(c, color, 2));
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(c, 32), dp(c, 4));
+        lp.gravity = Gravity.CENTER_HORIZONTAL;
+        lp.bottomMargin = dp(c, 18);
+        handle.setLayoutParams(lp);
+        return handle;
     }
 }

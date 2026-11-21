@@ -16,30 +16,39 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.hello.ai.Predictors;
-import com.example.hello.ai.RuleBasedPredictor;
-import com.example.hello.ai.Suggestion;
 import com.example.hello.auth.User;
+import com.example.hello.data.Catalog;
 import com.example.hello.data.SampleData;
+import com.example.hello.data.WorkoutStore;
+import com.example.hello.engine.Exercise;
+import com.example.hello.engine.Forecast;
+import com.example.hello.engine.Intensity;
+import com.example.hello.engine.Suggestion;
+import com.example.hello.engine.Weights;
 import com.example.hello.ui.BarChartView;
 import com.example.hello.ui.MicView;
 import com.example.hello.ui.RingView;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-/** The home screen: greeting, AI coach card, stats, weekly chart, voice log and PRs. */
+/** The home screen: greeting, PR forecasts, today's target, stats, weekly chart and voice log. */
 public final class HomeScreen {
     private HomeScreen() {}
 
     public interface Listener {
         void onAvatarTapped();
+        void onStartWorkout();
+        void onIntensityTapped();
     }
 
-    public static View create(final Activity a, User user, final Listener listener) {
+    public static View create(final Activity a, User user, WorkoutStore store, final Listener listener) {
         FrameLayout root = new FrameLayout(a);
         root.setBackgroundColor(Palette.BG);
 
@@ -53,21 +62,22 @@ public final class HomeScreen {
         root.addView(scroll, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        Suggestion next = Predictors.create()
-                .suggestNext(SampleData.NEXT_EXERCISE, SampleData.lastBenchSession());
-
+        boolean today = store.workedOutToday();
         RingView ring = new RingView(a);
-        ring.setData(SampleData.WORKOUTS_THIS_WEEK, SampleData.WEEKLY_GOAL, "workouts");
+        ring.setData(SampleData.WORKOUTS_THIS_WEEK + (today ? 1 : 0), SampleData.WEEKLY_GOAL, "workouts");
+        float[] volume = new float[7];
+        System.arraycopy(SampleData.PREVIOUS_6_DAYS_VOLUME, 0, volume, 0, 6);
+        volume[6] = store.todayVolume();
         BarChartView bars = new BarChartView(a);
-        bars.setData(SampleData.LAST_7_DAYS_VOLUME, last7DayLabels(), 6);
+        bars.setData(volume, last7DayLabels(), 6);
 
         content.addView(header(a, user, listener));
-        content.addView(heroCard(a, next), below(a, 24));
-        content.addView(statsRow(a, ring), below(a, 12));
-        content.addView(weeklyCard(a, bars), below(a, 12));
+        content.addView(sectionTitle(a, "Personal records", "See all"), below(a, 28));
+        content.addView(recordsStrip(a, store));
+        content.addView(heroCard(a, store, listener), below(a, 20));
+        content.addView(statsRow(a, ring, today), below(a, 12));
+        content.addView(weeklyCard(a, bars, volume), below(a, 12));
         content.addView(voiceCard(a), below(a, 12));
-        content.addView(sectionTitle(a, "Personal records", "See all"), below(a, 32));
-        content.addView(recordsStrip(a));
 
         // Fade the content out behind the floating button.
         View scrim = new View(a);
@@ -81,7 +91,9 @@ public final class HomeScreen {
         fab.setTypeface(Typeface.DEFAULT_BOLD);
         fab.setPadding(dp(a, 36), 0, dp(a, 36), 0);
         fab.setElevation(dp(a, 8));
-        fab.setOnClickListener(soon(a, "Set logging"));
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { listener.onStartWorkout(); }
+        });
         FrameLayout.LayoutParams fabLp = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, dp(a, 58),
                 Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
@@ -121,7 +133,80 @@ public final class HomeScreen {
         return row;
     }
 
-    private static View heroCard(Activity a, Suggestion s) {
+    private static View recordsStrip(Activity a, final WorkoutStore store) {
+        HorizontalScrollView hsv = new HorizontalScrollView(a);
+        hsv.setHorizontalScrollBarEnabled(false);
+        hsv.setClipToPadding(false);
+        int side = dp(a, 20);
+        hsv.setPadding(side, 0, side, 0);
+
+        List<Exercise> lifts = new ArrayList<>(Catalog.MAIN_LIFTS);
+        Collections.sort(lifts, new Comparator<Exercise>() {
+            @Override public int compare(Exercise x, Exercise y) {
+                return Long.compare(store.prTime(y), store.prTime(x));
+            }
+        });
+
+        Intensity intensity = store.intensity();
+        LinearLayout strip = new LinearLayout(a);
+        strip.setOrientation(LinearLayout.HORIZONTAL);
+        for (int i = 0; i < lifts.size(); i++) {
+            Exercise e = lifts.get(i);
+            boolean fresh = store.prIsRecent(e);
+            Forecast f = store.forecast(e, intensity);
+
+            LinearLayout card = card(a);
+            if (fresh) ((GradientDrawable) card.getBackground()).setStroke(dp(a, 1.5f), Palette.LIME);
+
+            LinearLayout top = new LinearLayout(a);
+            top.setOrientation(LinearLayout.HORIZONTAL);
+            top.setGravity(Gravity.CENTER_VERTICAL);
+            TextView lift = Views.text(a, e.name.toUpperCase(Locale.US), 11, Palette.MUTED, Palette.MEDIUM);
+            lift.setLetterSpacing(0.1f);
+            lift.setSingleLine(true);
+            top.addView(lift, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+            if (fresh) top.addView(Views.chip(a, "NEW", Palette.BG, Palette.LIME));
+            card.addView(top);
+
+            LinearLayout w = numberWithUnit(a, Weights.format(store.pr(e)), 34, "lb", 14,
+                    Palette.TEXT, Palette.MUTED);
+            w.setPadding(0, dp(a, 6), 0, 0);
+            card.addView(w);
+            card.addView(Views.text(a, store.prWhen(e), 12, fresh ? Palette.LIME : Palette.MUTED));
+
+            View divider = new View(a);
+            divider.setBackgroundColor(Palette.STROKE);
+            LinearLayout.LayoutParams divLp = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, dp(a, 1));
+            divLp.topMargin = dp(a, 12);
+            divLp.bottomMargin = dp(a, 10);
+            card.addView(divider, divLp);
+
+            card.addView(Views.text(a, "NEXT · " + Weights.format(f.target) + " LB", 11, Palette.MUTED,
+                    Typeface.DEFAULT_BOLD));
+            card.addView(Views.text(a, "~" + f.dateLabel(), 18, Palette.LIME, Palette.BLACK));
+
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    dp(a, 156), ViewGroup.LayoutParams.MATCH_PARENT);
+            if (i < lifts.size() - 1) lp.rightMargin = dp(a, 12);
+            strip.addView(card, lp);
+        }
+        hsv.addView(strip);
+
+        LinearLayout.LayoutParams bleed = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        bleed.leftMargin = -side;
+        bleed.rightMargin = -side;
+        bleed.topMargin = dp(a, 14);
+        hsv.setLayoutParams(bleed);
+        return hsv;
+    }
+
+    private static View heroCard(Activity a, WorkoutStore store, final Listener listener) {
+        Exercise e = Catalog.BENCH;
+        Suggestion s = store.suggest(e);
+        boolean prAttempt = s.weight > store.pr(e);
+
         LinearLayout card = new LinearLayout(a);
         card.setOrientation(LinearLayout.VERTICAL);
         int pad = dp(a, 22);
@@ -133,25 +218,31 @@ public final class HomeScreen {
         LinearLayout top = new LinearLayout(a);
         top.setOrientation(LinearLayout.HORIZONTAL);
         top.setGravity(Gravity.CENTER_VERTICAL);
-        top.addView(Views.chip(a, "✦  AI COACH", Color.WHITE, 0x2EFFFFFF));
+        top.addView(Views.chip(a, "✦  COACH", Color.WHITE, 0x2EFFFFFF));
         top.addView(new View(a), new LinearLayout.LayoutParams(0, 1, 1));
-        top.addView(Views.text(a, "Today · " + SampleData.TODAY_WORKOUT, 13, 0xCCFFFFFF, Palette.MEDIUM));
+        TextView mode = Views.chip(a, store.intensity().label.toUpperCase(Locale.US) + "  ▾",
+                Color.WHITE, 0x40000000);
+        mode.setPadding(dp(a, 14), dp(a, 8), dp(a, 14), dp(a, 8));
+        mode.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { listener.onIntensityTapped(); }
+        });
+        top.addView(mode);
         card.addView(top);
 
-        TextView exercise = Views.text(a, s.exercise, 20, Color.WHITE, Palette.MEDIUM);
+        TextView exercise = Views.text(a, "Today · " + Catalog.TODAY_WORKOUT + " · " + e.name, 15,
+                0xE6FFFFFF, Palette.MEDIUM);
         exercise.setPadding(0, dp(a, 20), 0, 0);
         card.addView(exercise);
 
-        LinearLayout weight = numberWithUnit(a, RuleBasedPredictor.format(s.weight), 76, "lb", 22,
-                Color.WHITE, 0xCCFFFFFF);
-        card.addView(weight);
+        card.addView(numberWithUnit(a, Weights.format(s.weight), 76, "lb", 22, Color.WHITE, 0xCCFFFFFF));
+        card.addView(Views.text(a, s.repsLabel(), 16, 0xE6FFFFFF));
 
-        card.addView(Views.text(a, s.sets + " sets × " + s.reps + " reps", 16, 0xE6FFFFFF));
-
-        TextView delta = Views.chip(a, deltaText(s.delta), Palette.LIME, 0x40000000);
-        LinearLayout.LayoutParams deltaLp = wrap();
-        deltaLp.topMargin = dp(a, 14);
-        card.addView(delta, deltaLp);
+        TextView badge = prAttempt
+                ? Views.chip(a, "🏆  PR ATTEMPT", Palette.BG, Palette.LIME)
+                : Views.chip(a, deltaText(s.delta), Palette.LIME, 0x40000000);
+        LinearLayout.LayoutParams badgeLp = wrap();
+        badgeLp.topMargin = dp(a, 14);
+        card.addView(badge, badgeLp);
 
         TextView reason = Views.text(a, s.reason, 14, 0xD9FFFFFF);
         reason.setLineSpacing(0, 1.2f);
@@ -161,7 +252,9 @@ public final class HomeScreen {
         Button start = Views.pillButton(a, "Start workout   →", Palette.LIME, Palette.BG, 0);
         start.setTextSize(16);
         start.setTypeface(Typeface.DEFAULT_BOLD);
-        start.setOnClickListener(soon(a, "Workout mode"));
+        start.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { listener.onStartWorkout(); }
+        });
         LinearLayout.LayoutParams startLp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(a, 56));
         startLp.topMargin = dp(a, 22);
@@ -169,14 +262,14 @@ public final class HomeScreen {
         return card;
     }
 
-    private static View statsRow(Activity a, RingView ring) {
+    private static View statsRow(Activity a, RingView ring, boolean today) {
         LinearLayout row = new LinearLayout(a);
         row.setOrientation(LinearLayout.HORIZONTAL);
 
         LinearLayout streak = card(a);
         streak.addView(cardLabel(a, "Streak"));
-        LinearLayout num = numberWithUnit(a, String.valueOf(SampleData.STREAK_DAYS), 44, "🔥", 26,
-                Palette.TEXT, Palette.TEXT);
+        LinearLayout num = numberWithUnit(a, String.valueOf(SampleData.STREAK_DAYS + (today ? 1 : 0)), 44,
+                "🔥", 26, Palette.TEXT, Palette.TEXT);
         num.setPadding(0, dp(a, 6), 0, 0);
         streak.addView(num);
         streak.addView(Views.text(a, "days in a row", 13, Palette.MUTED));
@@ -200,7 +293,7 @@ public final class HomeScreen {
         return row;
     }
 
-    private static View weeklyCard(Activity a, BarChartView bars) {
+    private static View weeklyCard(Activity a, BarChartView bars, float[] volume) {
         LinearLayout card = card(a);
 
         LinearLayout top = new LinearLayout(a);
@@ -209,7 +302,7 @@ public final class HomeScreen {
         col.setOrientation(LinearLayout.VERTICAL);
         col.addView(cardLabel(a, "Last 7 days"));
         float total = 0;
-        for (float v : SampleData.LAST_7_DAYS_VOLUME) total += v;
+        for (float v : volume) total += v;
         col.addView(numberWithUnit(a, String.format(Locale.US, "%,d", (long) total), 32, "lb", 16,
                 Palette.TEXT, Palette.MUTED));
         col.addView(Views.text(a, "Total volume lifted", 13, Palette.MUTED));
@@ -265,51 +358,6 @@ public final class HomeScreen {
         return row;
     }
 
-    private static View recordsStrip(Activity a) {
-        HorizontalScrollView hsv = new HorizontalScrollView(a);
-        hsv.setHorizontalScrollBarEnabled(false);
-        hsv.setClipToPadding(false);
-        int side = dp(a, 20);
-        hsv.setPadding(side, 0, side, 0);
-
-        LinearLayout strip = new LinearLayout(a);
-        strip.setOrientation(LinearLayout.HORIZONTAL);
-        List<SampleData.PersonalRecord> prs = SampleData.personalRecords();
-        for (int i = 0; i < prs.size(); i++) {
-            SampleData.PersonalRecord pr = prs.get(i);
-            LinearLayout card = card(a);
-            if (pr.isNew) ((GradientDrawable) card.getBackground()).setStroke(dp(a, 1.5f), Palette.LIME);
-
-            TextView lift = Views.text(a, pr.lift.toUpperCase(Locale.US), 11, Palette.MUTED, Palette.MEDIUM);
-            lift.setLetterSpacing(0.1f);
-            card.addView(lift);
-            LinearLayout w = numberWithUnit(a, RuleBasedPredictor.format(pr.weight), 34, "lb", 14,
-                    Palette.TEXT, Palette.MUTED);
-            w.setPadding(0, dp(a, 6), 0, 0);
-            card.addView(w);
-            card.addView(Views.text(a, pr.when, 12, Palette.MUTED));
-            if (pr.isNew) {
-                LinearLayout.LayoutParams chipLp = wrap();
-                chipLp.topMargin = dp(a, 12);
-                card.addView(Views.chip(a, "NEW PR", Palette.BG, Palette.LIME), chipLp);
-            }
-
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                    dp(a, 150), ViewGroup.LayoutParams.MATCH_PARENT);
-            if (i < prs.size() - 1) lp.rightMargin = dp(a, 12);
-            strip.addView(card, lp);
-        }
-        hsv.addView(strip);
-
-        LinearLayout.LayoutParams bleed = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        bleed.leftMargin = -side;
-        bleed.rightMargin = -side;
-        bleed.topMargin = dp(a, 14);
-        hsv.setLayoutParams(bleed);
-        return hsv;
-    }
-
     // ---- Helpers ----
 
     private static LinearLayout card(Activity a) {
@@ -327,8 +375,8 @@ public final class HomeScreen {
         return Views.text(a, s, 13, Palette.MUTED, Palette.MEDIUM);
     }
 
-    private static LinearLayout numberWithUnit(Activity a, String number, float sp, String unit,
-                                               float unitSp, int color, int unitColor) {
+    static LinearLayout numberWithUnit(Activity a, String number, float sp, String unit,
+                                       float unitSp, int color, int unitColor) {
         LinearLayout row = new LinearLayout(a);
         row.setOrientation(LinearLayout.HORIZONTAL);
         row.setBaselineAligned(true);
@@ -354,8 +402,8 @@ public final class HomeScreen {
     }
 
     private static String deltaText(double delta) {
-        if (delta > 0) return "▲ +" + RuleBasedPredictor.format(delta) + " LB VS LAST SESSION";
-        if (delta < 0) return "▼ " + RuleBasedPredictor.format(delta) + " LB VS LAST SESSION";
+        if (delta > 0) return "▲ +" + Weights.format(delta) + " LB VS LAST SESSION";
+        if (delta < 0) return "▼ " + Weights.format(delta) + " LB · DELOAD";
         return "= SAME AS LAST SESSION";
     }
 
@@ -398,7 +446,7 @@ public final class HomeScreen {
     private static View.OnClickListener soon(final Activity a, final String feature) {
         return new View.OnClickListener() {
             @Override public void onClick(View v) {
-                Toast.makeText(a, feature + " is coming in round two", Toast.LENGTH_SHORT).show();
+                Toast.makeText(a, feature + " is coming soon", Toast.LENGTH_SHORT).show();
             }
         };
     }
