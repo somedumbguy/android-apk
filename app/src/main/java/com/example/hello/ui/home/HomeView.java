@@ -12,7 +12,6 @@ import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.example.hello.ui.common.Cards;
 import com.example.hello.ui.common.Palette;
 import com.example.hello.ui.common.Screens;
@@ -27,7 +26,9 @@ public final class HomeView {
 
     public interface Listener {
         void onAvatarTapped();
+
         void onStartWorkout();
+
         void onIntensityTapped();
     }
 
@@ -48,7 +49,8 @@ public final class HomeView {
         bars.setData(state.stats.volumes, state.stats.dayLetters, state.stats.volumes.length - 1);
 
         content.addView(header(c, state, listener));
-        content.addView(Cards.sectionTitle(c, "Personal records", "See all", Ui.comingSoon(c, "Records history")),
+        content.addView(
+                Cards.sectionTitle(c, "Personal records", "See all", Ui.comingSoon(c, "Records history")),
                 Ui.matchWidth(c, 0, 28));
         content.addView(records(c, state));
         content.addView(target(c, state.target, listener), Ui.matchWidth(c, 0, 20));
@@ -62,8 +64,8 @@ public final class HomeView {
         fab.setPadding(Ui.dp(c, 36), 0, Ui.dp(c, 36), 0);
         fab.setElevation(Ui.dp(c, 8));
         fab.setOnClickListener(v -> listener.onStartWorkout());
-        FrameLayout.LayoutParams fabLp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                Ui.dp(c, 58), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
+        FrameLayout.LayoutParams fabLp = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, Ui.dp(c, 58), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
         fabLp.bottomMargin = Ui.dp(c, 20);
         root.addView(fab, fabLp);
 
@@ -126,8 +128,8 @@ public final class HomeView {
             card.addView(Ui.caps(c, r.next, 11, Palette.MUTED));
             card.addView(Ui.text(c, r.nextDate, 18, Palette.LIME, Palette.BLACK));
 
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(Ui.dp(c, 156),
-                    ViewGroup.LayoutParams.MATCH_PARENT);
+            LinearLayout.LayoutParams lp =
+                    new LinearLayout.LayoutParams(Ui.dp(c, 156), ViewGroup.LayoutParams.MATCH_PARENT);
             if (i < s.records.size() - 1) lp.rightMargin = Ui.dp(c, 12);
             strip.addView(card, lp);
         }
@@ -233,7 +235,11 @@ public final class HomeView {
         card.addView(new MicView(c), new LinearLayout.LayoutParams(Ui.dp(c, 52), Ui.dp(c, 52)));
         LinearLayout col = Ui.column(c);
         col.addView(Ui.text(c, "Just say it", 17, Palette.TEXT, Palette.MEDIUM));
-        col.addView(Ui.text(c, "“Squat, 3 sets of 5 at 225”", 14, Palette.MUTED,
+        col.addView(Ui.text(
+                c,
+                "“Squat, 3 sets of 5 at 225”",
+                14,
+                Palette.MUTED,
                 Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)));
         TextView ai = Ui.text(c, "AI logs it for you", 12, Palette.LIME, Palette.MEDIUM);
         ai.setPadding(0, Ui.dp(c, 4), 0, 0);

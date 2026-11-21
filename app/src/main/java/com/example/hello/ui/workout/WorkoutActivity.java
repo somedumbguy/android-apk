@@ -19,10 +19,8 @@ import android.widget.Chronometer;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import androidx.activity.ComponentActivity;
 import androidx.activity.OnBackPressedCallback;
-
 import com.example.hello.app.AppContainer;
 import com.example.hello.domain.catalog.Catalog;
 import com.example.hello.domain.plates.PlateMath;
@@ -36,7 +34,6 @@ import com.example.hello.ui.common.Palette;
 import com.example.hello.ui.common.Screens;
 import com.example.hello.ui.common.Ui;
 import com.example.hello.ui.format.Formats;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -86,7 +83,8 @@ public class WorkoutActivity extends ComponentActivity {
         session = training.startSession(Catalog.PUSH_DAY);
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override public void handleOnBackPressed() {
+            @Override
+            public void handleOnBackPressed() {
                 confirmLeave();
             }
         });
@@ -123,8 +121,10 @@ public class WorkoutActivity extends ComponentActivity {
         finish.setTextSize(17);
         finish.setOnClickListener(v -> finishWorkout());
         bottom.addView(finish, Ui.matchWidth(this, 58, 12));
-        root.addView(bottom, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM));
+        root.addView(
+                bottom,
+                new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM));
         return root;
     }
 
@@ -170,8 +170,8 @@ public class WorkoutActivity extends ComponentActivity {
         card.addView(reason);
 
         if (entry.exercise.isBarbell()) {
-            TextView perSide = Ui.text(this, WorkoutFormatter.plates(plates, entry.suggestion.weight), 13,
-                    Palette.LIME, Palette.MEDIUM);
+            TextView perSide = Ui.text(
+                    this, WorkoutFormatter.plates(plates, entry.suggestion.weight), 13, Palette.LIME, Palette.MEDIUM);
             perSide.setPadding(0, dp(10), 0, dp(4));
             card.addView(perSide);
         }
@@ -191,8 +191,12 @@ public class WorkoutActivity extends ComponentActivity {
         idx.setBackground(Ui.circle(Palette.SURFACE_2));
         row.addView(idx, new LinearLayout.LayoutParams(dp(30), dp(30)));
 
-        TextView weight = Ui.text(this, Formats.lb(set.weight), warm ? 15 : 19,
-                warm ? Palette.MUTED : Palette.TEXT, warm ? Palette.MEDIUM : Palette.BLACK);
+        TextView weight = Ui.text(
+                this,
+                Formats.lb(set.weight),
+                warm ? 15 : 19,
+                warm ? Palette.MUTED : Palette.TEXT,
+                warm ? Palette.MEDIUM : Palette.BLACK);
         weight.setPadding(dp(14), 0, 0, 0);
         row.addView(weight);
 
@@ -245,8 +249,8 @@ public class WorkoutActivity extends ComponentActivity {
         restFill = new View(this);
         restFill.setBackgroundColor(Palette.LIME);
         restFill.setPivotX(0);
-        restBar.addView(restFill, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(3), Gravity.BOTTOM));
+        restBar.addView(
+                restFill, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(3), Gravity.BOTTOM));
         return restBar;
     }
 
@@ -292,7 +296,12 @@ public class WorkoutActivity extends ComponentActivity {
         TextView check = setViews.get(set).check;
         check.setScaleX(0.7f);
         check.setScaleY(0.7f);
-        check.animate().scaleX(1f).scaleY(1f).setDuration(320).setInterpolator(new OvershootInterpolator(3f)).start();
+        check.animate()
+                .scaleX(1f)
+                .scaleY(1f)
+                .setDuration(320)
+                .setInterpolator(new OvershootInterpolator(3f))
+                .start();
         if (!set.warmup) {
             ExerciseEntry entry = session.entryFor(set);
             startRest(entry == null ? 90 : entry.exercise.restSeconds);

@@ -7,6 +7,7 @@ public final class Suggestion {
     private final int[] reps;
     /** Change from last session's weight (positive, zero or negative). */
     public final double delta;
+
     public final String reason;
 
     public Suggestion(Exercise exercise, double weight, int[] reps, double delta, String reason) {

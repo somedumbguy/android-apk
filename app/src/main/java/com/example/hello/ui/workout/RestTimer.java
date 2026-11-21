@@ -1,7 +1,6 @@
 package com.example.hello.ui.workout;
 
 import com.example.hello.ui.format.Formats;
-
 import java.util.function.LongSupplier;
 
 /** Countdown between sets. Time comes from an injected source, so tests control it. */

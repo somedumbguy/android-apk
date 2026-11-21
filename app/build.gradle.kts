@@ -44,6 +44,18 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
+    // Android Lint: any warning fails the build.
+    lint {
+        abortOnError = true
+        warningsAsErrors = true
+        checkDependencies = true
+        // UI text is written in code for now; translations come later.
+        disable += "SetTextI18n"
+        // These depend on what's newly published online, so they'd make builds fail
+        // on dates rather than on code. Report them without failing.
+        informational += listOf("OldTargetApi", "GradleDependency", "NewerVersionAvailable", "AndroidGradlePluginVersion")
+    }
 }
 
 dependencies {
@@ -52,9 +64,14 @@ dependencies {
     implementation(libs.androidx.core)
 
     testImplementation(libs.junit)
+    testImplementation(libs.archunit)
     testImplementation(testFixtures(project(":domain")))
 }
 
+// Compiler warnings are errors.
 tasks.withType<JavaCompile>().configureEach {
-    options.compilerArgs.addAll(listOf("-Xlint:deprecation", "-Xlint:unchecked"))
+    options.compilerArgs.addAll(listOf("-Xlint:deprecation", "-Xlint:unchecked", "-Werror"))
 }
+
+// Every Android build makes sure this clone uses the project's git hooks.
+tasks.named("preBuild") { dependsOn(":installGitHooks") }

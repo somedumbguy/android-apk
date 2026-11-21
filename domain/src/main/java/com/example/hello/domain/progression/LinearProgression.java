@@ -4,7 +4,6 @@ import com.example.hello.domain.model.Exercise;
 import com.example.hello.domain.model.SetRecord;
 import com.example.hello.domain.model.Suggestion;
 import com.example.hello.domain.model.Weights;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -33,17 +32,26 @@ public final class LinearProgression implements ProgressionStrategy {
         if (allHit) {
             double inc = intensity.increment(e);
             next = lastW + inc;
-            reason = String.format(Locale.US, "You hit all %d reps at %s lb. Add %s lb today.",
-                    total, Weights.format(lastW), Weights.format(inc));
+            reason = String.format(
+                    Locale.US,
+                    "You hit all %d reps at %s lb. Add %s lb today.",
+                    total,
+                    Weights.format(lastW),
+                    Weights.format(inc));
         } else if (consecutiveFails >= STALL_LIMIT) {
             next = Math.max(MIN_BAR, Weights.roundTo(lastW * DELOAD, 5));
-            reason = String.format(Locale.US,
+            reason = String.format(
+                    Locale.US,
                     "Stalled at %s lb %d sessions in a row. Drop 10%% to %s lb and build momentum back.",
-                    Weights.format(lastW), consecutiveFails, Weights.format(next));
+                    Weights.format(lastW),
+                    consecutiveFails,
+                    Weights.format(next));
         } else {
             next = lastW;
-            reason = String.format(Locale.US,
-                    "Missed a few reps at %s lb. Same weight today. You've got this.", Weights.format(lastW));
+            reason = String.format(
+                    Locale.US,
+                    "Missed a few reps at %s lb. Same weight today. You've got this.",
+                    Weights.format(lastW));
         }
         int[] reps = new int[e.sets];
         Arrays.fill(reps, e.minReps);

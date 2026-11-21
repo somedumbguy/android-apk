@@ -1,7 +1,6 @@
 package com.example.hello.domain.session;
 
 import com.example.hello.domain.model.WorkoutPlan;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

@@ -4,9 +4,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-
 import androidx.activity.ComponentActivity;
-
 import com.example.hello.app.AppContainer;
 import com.example.hello.auth.AuthProvider;
 import com.example.hello.auth.User;
@@ -47,23 +45,35 @@ public class MainActivity extends ComponentActivity implements HomeView.Listener
 
     private void signIn() {
         auth.signIn(this, new AuthProvider.Callback() {
-            @Override public void onSignedIn(User user) { render(); }
-            @Override public void onCancelled() {}
-            @Override public void onError(String message) { Ui.toast(MainActivity.this, "Sign-in failed: " + message); }
+            @Override
+            public void onSignedIn(User user) {
+                render();
+            }
+
+            @Override
+            public void onCancelled() {}
+
+            @Override
+            public void onError(String message) {
+                Ui.toast(MainActivity.this, "Sign-in failed: " + message);
+            }
         });
     }
 
     // ---- HomeView.Listener ----
 
-    @Override public void onStartWorkout() {
+    @Override
+    public void onStartWorkout() {
         startActivity(new Intent(this, WorkoutActivity.class));
     }
 
-    @Override public void onIntensityTapped() {
+    @Override
+    public void onIntensityTapped() {
         IntensitySheet.show(this, container.intensityPresenter(), this::render);
     }
 
-    @Override public void onAvatarTapped() {
+    @Override
+    public void onAvatarTapped() {
         User user = auth.getCurrentUser();
         if (user == null) return;
         String message = user.email + (auth.isMock() ? "\n\nSigned in with mock authentication." : "");

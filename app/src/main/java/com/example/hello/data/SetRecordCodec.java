@@ -1,7 +1,6 @@
 package com.example.hello.data;
 
 import com.example.hello.domain.model.SetRecord;
-
 import java.util.ArrayList;
 import java.util.List;
 

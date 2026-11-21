@@ -2,7 +2,6 @@ package com.example.hello.app;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-
 import com.example.hello.auth.AuthProvider;
 import com.example.hello.auth.MockAuthProvider;
 import com.example.hello.auth.UserStore;
@@ -15,7 +14,6 @@ import com.example.hello.domain.progression.ProgressionEngine;
 import com.example.hello.domain.training.TrainingService;
 import com.example.hello.ui.home.HomePresenter;
 import com.example.hello.ui.intensity.IntensityPresenter;
-
 import java.time.Clock;
 import java.util.Locale;
 

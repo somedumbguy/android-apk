@@ -38,8 +38,8 @@ public final class Cards {
     }
 
     /** A big number with a smaller unit on the same baseline, e.g. "190 lb". */
-    public static LinearLayout numberWithUnit(Context c, String number, float sp, String unit, float unitSp,
-                                              int color, int unitColor) {
+    public static LinearLayout numberWithUnit(
+            Context c, String number, float sp, String unit, float unitSp, int color, int unitColor) {
         LinearLayout row = new LinearLayout(c);
         row.setOrientation(LinearLayout.HORIZONTAL);
         row.setBaselineAligned(true);
@@ -67,10 +67,10 @@ public final class Cards {
     /** Fades content out at the bottom of the screen, behind a floating button. */
     public static View bottomScrim(Context c, int heightDp) {
         View scrim = new View(c);
-        scrim.setBackground(new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP,
-                new int[] {Palette.BG, Palette.BG, Palette.BG & 0x00FFFFFF}));
-        scrim.setLayoutParams(new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(c, heightDp), Gravity.BOTTOM));
+        scrim.setBackground(new GradientDrawable(
+                GradientDrawable.Orientation.BOTTOM_TOP, new int[] {Palette.BG, Palette.BG, Palette.BG & 0x00FFFFFF}));
+        scrim.setLayoutParams(
+                new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(c, heightDp), Gravity.BOTTOM));
         return scrim;
     }
 }

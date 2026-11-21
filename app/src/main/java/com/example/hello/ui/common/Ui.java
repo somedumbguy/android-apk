@@ -19,7 +19,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -36,7 +35,8 @@ public final class Ui {
 
     /** Text size in pixels, honouring the user's font scale. */
     public static float sp(Context c, float sp) {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, c.getResources().getDisplayMetrics());
+        return TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_SP, sp, c.getResources().getDisplayMetrics());
     }
 
     // ---- Text ----
@@ -138,15 +138,16 @@ public final class Ui {
     // ---- Layout params ----
 
     public static LinearLayout.LayoutParams matchWidth(Context c, int heightDp, int topMarginDp) {
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
                 heightDp <= 0 ? ViewGroup.LayoutParams.WRAP_CONTENT : dp(c, heightDp));
         lp.topMargin = dp(c, topMarginDp);
         return lp;
     }
 
     public static LinearLayout.LayoutParams wrap(Context c, int topMarginDp) {
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams lp =
+                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         lp.topMargin = dp(c, topMarginDp);
         return lp;
     }

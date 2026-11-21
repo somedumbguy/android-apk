@@ -2,7 +2,6 @@ package com.example.hello.domain.forecast;
 
 import com.example.hello.domain.model.Exercise;
 import com.example.hello.domain.progression.Intensity;
-
 import java.time.Clock;
 import java.time.LocalDate;
 

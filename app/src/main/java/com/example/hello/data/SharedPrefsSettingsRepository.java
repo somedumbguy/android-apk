@@ -1,7 +1,6 @@
 package com.example.hello.data;
 
 import android.content.SharedPreferences;
-
 import com.example.hello.domain.history.SettingsRepository;
 import com.example.hello.domain.progression.Intensity;
 
@@ -14,7 +13,8 @@ public final class SharedPrefsSettingsRepository implements SettingsRepository {
         this.prefs = prefs;
     }
 
-    @Override public Intensity intensity() {
+    @Override
+    public Intensity intensity() {
         try {
             return Intensity.valueOf(prefs.getString(INTENSITY, Intensity.BUILD.name()));
         } catch (IllegalArgumentException e) {
@@ -22,7 +22,8 @@ public final class SharedPrefsSettingsRepository implements SettingsRepository {
         }
     }
 
-    @Override public void setIntensity(Intensity intensity) {
+    @Override
+    public void setIntensity(Intensity intensity) {
         prefs.edit().putString(INTENSITY, intensity.name()).apply();
     }
 }

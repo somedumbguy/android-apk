@@ -3,7 +3,6 @@ package com.example.hello.domain.progression;
 import com.example.hello.domain.model.Exercise;
 import com.example.hello.domain.model.SetRecord;
 import com.example.hello.domain.model.Suggestion;
-
 import java.util.List;
 
 /**

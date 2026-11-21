@@ -4,7 +4,6 @@ import com.example.hello.domain.model.Exercise;
 import com.example.hello.domain.model.SetRecord;
 import com.example.hello.domain.model.Suggestion;
 import com.example.hello.domain.model.Weights;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -26,9 +25,12 @@ public final class DoubleProgression implements ProgressionStrategy {
             double next = lastW + inc;
             int[] reps = new int[e.sets];
             Arrays.fill(reps, e.minReps);
-            String reason = String.format(Locale.US,
+            String reason = String.format(
+                    Locale.US,
                     "You hit %d reps on every set. Move up to %s lb and start back at %d.",
-                    e.maxReps, Weights.format(next), e.minReps);
+                    e.maxReps,
+                    Weights.format(next),
+                    e.minReps);
             return new Suggestion(e, next, reps, inc, reason);
         }
 
@@ -40,9 +42,12 @@ public final class DoubleProgression implements ProgressionStrategy {
             if (i > 0) sb.append("/");
             sb.append(targets[i]);
         }
-        String reason = String.format(Locale.US,
+        String reason = String.format(
+                Locale.US,
                 "One more rep per set than last time: %s at %s lb. Hit %d on every set to move up.",
-                sb, Weights.format(lastW), e.maxReps);
+                sb,
+                Weights.format(lastW),
+                e.maxReps);
         return new Suggestion(e, lastW, targets, 0, reason);
     }
 }

@@ -3,7 +3,6 @@ package com.example.hello.domain.history;
 import com.example.hello.domain.model.Exercise;
 import com.example.hello.domain.model.PersonalRecord;
 import com.example.hello.domain.model.SetRecord;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;

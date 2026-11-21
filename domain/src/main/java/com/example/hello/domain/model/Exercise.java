@@ -15,6 +15,7 @@ public final class Exercise {
     public final double incrementScale;
     /** Times per week this lift is trained, used for forecasts. */
     public final double sessionsPerWeek;
+
     public final int restSeconds;
 
     private Exercise(Builder b) {
@@ -39,15 +40,18 @@ public final class Exercise {
         return equipment == Equipment.BARBELL;
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         return o instanceof Exercise && ((Exercise) o).id.equals(id);
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return id.hashCode();
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return name;
     }
 
@@ -71,13 +75,45 @@ public final class Exercise {
             this.name = name;
         }
 
-        public Builder equipment(Equipment e) { equipment = e; return this; }
-        public Builder sets(int n) { sets = n; return this; }
-        public Builder reps(int n) { minReps = n; maxReps = n; return this; }
-        public Builder repRange(int min, int max) { minReps = min; maxReps = max; return this; }
-        public Builder incrementScale(double s) { incrementScale = s; return this; }
-        public Builder sessionsPerWeek(double s) { sessionsPerWeek = s; return this; }
-        public Builder restSeconds(int s) { restSeconds = s; return this; }
-        public Exercise build() { return new Exercise(this); }
+        public Builder equipment(Equipment e) {
+            equipment = e;
+            return this;
+        }
+
+        public Builder sets(int n) {
+            sets = n;
+            return this;
+        }
+
+        public Builder reps(int n) {
+            minReps = n;
+            maxReps = n;
+            return this;
+        }
+
+        public Builder repRange(int min, int max) {
+            minReps = min;
+            maxReps = max;
+            return this;
+        }
+
+        public Builder incrementScale(double s) {
+            incrementScale = s;
+            return this;
+        }
+
+        public Builder sessionsPerWeek(double s) {
+            sessionsPerWeek = s;
+            return this;
+        }
+
+        public Builder restSeconds(int s) {
+            restSeconds = s;
+            return this;
+        }
+
+        public Exercise build() {
+            return new Exercise(this);
+        }
     }
 }

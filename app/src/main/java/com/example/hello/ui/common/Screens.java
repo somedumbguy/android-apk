@@ -5,7 +5,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ScrollView;
-
 import androidx.activity.ComponentActivity;
 import androidx.activity.EdgeToEdge;
 import androidx.activity.SystemBarStyle;
@@ -19,16 +18,14 @@ public final class Screens {
 
     /** Draws behind transparent system bars with light icons, on every Android version. */
     public static void setUp(ComponentActivity a) {
-        EdgeToEdge.enable(a,
-                SystemBarStyle.dark(Color.TRANSPARENT),
-                SystemBarStyle.dark(Color.TRANSPARENT));
+        EdgeToEdge.enable(a, SystemBarStyle.dark(Color.TRANSPARENT), SystemBarStyle.dark(Color.TRANSPARENT));
     }
 
     /** Pads a screen's root view so content stays clear of the status bar, nav bar and cutouts. */
     public static void padForSystemBars(View root) {
         ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
-            Insets bars = insets.getInsets(
-                    WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+            Insets bars =
+                    insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
             v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
             return WindowInsetsCompat.CONSUMED;
         });
@@ -49,8 +46,13 @@ public final class Screens {
             View v = container.getChildAt(i);
             v.setAlpha(0f);
             v.setTranslationY(offset);
-            v.animate().alpha(1f).translationY(0).setStartDelay(startDelayMs + stepMs * i)
-                    .setDuration(550).setInterpolator(ease).start();
+            v.animate()
+                    .alpha(1f)
+                    .translationY(0)
+                    .setStartDelay(startDelayMs + stepMs * i)
+                    .setDuration(550)
+                    .setInterpolator(ease)
+                    .start();
         }
     }
 
@@ -59,7 +61,13 @@ public final class Screens {
         v.setAlpha(0f);
         v.setScaleX(0.85f);
         v.setScaleY(0.85f);
-        v.animate().alpha(1f).scaleX(1f).scaleY(1f).setStartDelay(delayMs)
-                .setDuration(450).setInterpolator(new DecelerateInterpolator(2f)).start();
+        v.animate()
+                .alpha(1f)
+                .scaleX(1f)
+                .scaleY(1f)
+                .setStartDelay(delayMs)
+                .setDuration(450)
+                .setInterpolator(new DecelerateInterpolator(2f))
+                .start();
     }
 }

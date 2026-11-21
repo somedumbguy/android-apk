@@ -28,17 +28,20 @@ public final class SetRecord {
         return max;
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (!(o instanceof SetRecord)) return false;
         SetRecord s = (SetRecord) o;
         return s.weight == weight && s.reps == reps && s.targetReps == targetReps;
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return Double.hashCode(weight) * 31 * 31 + reps * 31 + targetReps;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return weight + "x" + reps + "/" + targetReps;
     }
 }

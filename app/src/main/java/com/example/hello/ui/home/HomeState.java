@@ -32,10 +32,17 @@ public final class HomeState {
         public final boolean prAttempt;
         /** "PR ATTEMPT" badge text, or the change from last session. */
         public final String badge;
+
         public final String reason;
 
-        Target(String intensity, String context, String weight, String reps, boolean prAttempt,
-               String badge, String reason) {
+        Target(
+                String intensity,
+                String context,
+                String weight,
+                String reps,
+                boolean prAttempt,
+                String badge,
+                String reason) {
             this.intensity = intensity;
             this.context = context;
             this.weight = weight;
@@ -56,8 +63,15 @@ public final class HomeState {
         public final String totalVolume;
         public final String change;
 
-        Stats(String streak, String best, int workoutsDone, int weeklyGoal, double[] volumes,
-              String[] dayLetters, String totalVolume, String change) {
+        Stats(
+                String streak,
+                String best,
+                int workoutsDone,
+                int weeklyGoal,
+                double[] volumes,
+                String[] dayLetters,
+                String totalVolume,
+                String change) {
             this.streak = streak;
             this.best = best;
             this.workoutsDone = workoutsDone;

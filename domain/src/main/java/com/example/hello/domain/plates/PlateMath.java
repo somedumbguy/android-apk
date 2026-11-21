@@ -1,7 +1,6 @@
 package com.example.hello.domain.plates;
 
 import com.example.hello.domain.model.Weights;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

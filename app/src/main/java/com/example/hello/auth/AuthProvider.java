@@ -10,7 +10,9 @@ public interface AuthProvider {
 
     interface Callback {
         void onSignedIn(User user);
+
         void onCancelled();
+
         void onError(String message);
     }
 

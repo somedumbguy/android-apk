@@ -9,14 +9,13 @@ import com.example.hello.domain.plates.PlateMath;
 import com.example.hello.domain.progression.Intensity;
 import com.example.hello.domain.session.SetEntry;
 import com.example.hello.domain.training.WorkoutSummary;
-
-import org.junit.Test;
-
 import java.util.Collections;
+import org.junit.Test;
 
 public class WorkoutFormatterTest {
 
-    @Test public void repsAndCheckReflectTheSetStatus() {
+    @Test
+    public void repsAndCheckReflectTheSetStatus() {
         SetEntry s = new SetEntry(190, 5, false);
         assertEquals("× 5", WorkoutFormatter.reps(s));
         assertEquals("✓", WorkoutFormatter.check(s));
@@ -30,7 +29,8 @@ public class WorkoutFormatterTest {
         assertEquals("3", WorkoutFormatter.check(s));
     }
 
-    @Test public void repChoicesRunFromAboveTargetDownToZero() {
+    @Test
+    public void repChoicesRunFromAboveTargetDownToZero() {
         int[] choices = WorkoutFormatter.repChoices(new SetEntry(190, 5, false));
         assertEquals(5 + WorkoutFormatter.EXTRA_REP_CHOICES, choices[0]);
         assertEquals(0, choices[choices.length - 1]);
@@ -38,24 +38,28 @@ public class WorkoutFormatterTest {
         assertEquals("1 rep", WorkoutFormatter.repChoiceLabel(1, 5));
     }
 
-    @Test public void platesLine() {
+    @Test
+    public void platesLine() {
         assertEquals("Per side:  45 · 25 · 2.5", WorkoutFormatter.plates(PlateMath.standard(), 190));
     }
 
-    @Test public void summaryCallsOutNewRecords() {
+    @Test
+    public void summaryCallsOutNewRecords() {
         WorkoutSummary none = new WorkoutSummary(2850, 3, Collections.emptyList());
         assertEquals("Workout complete 💪", WorkoutFormatter.summaryTitle(none));
         assertTrue(WorkoutFormatter.summaryMessage(none).startsWith("2,850 lb lifted across 3 sets."));
 
-        WorkoutSummary pr = new WorkoutSummary(2850, 3,
-                Collections.singletonList(new WorkoutSummary.NewRecord(Catalog.BENCH, 190)));
+        WorkoutSummary pr = new WorkoutSummary(
+                2850, 3, Collections.singletonList(new WorkoutSummary.NewRecord(Catalog.BENCH, 190)));
         assertEquals("New PR! 🏆", WorkoutFormatter.summaryTitle(pr));
         assertTrue(WorkoutFormatter.summaryMessage(pr).contains("Bench Press · 190 lb"));
     }
 
-    @Test public void subtitleSummarizesTheSession() {
+    @Test
+    public void subtitleSummarizesTheSession() {
         TestTraining t = new TestTraining();
-        assertEquals("4 exercises · 12 sets · Build",
+        assertEquals(
+                "4 exercises · 12 sets · Build",
                 WorkoutFormatter.subtitle(t.service.startSession(Catalog.PUSH_DAY), Intensity.BUILD));
     }
 }

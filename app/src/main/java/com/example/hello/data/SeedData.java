@@ -3,7 +3,6 @@ package com.example.hello.data;
 import com.example.hello.domain.catalog.Catalog;
 import com.example.hello.domain.model.Exercise;
 import com.example.hello.domain.model.SetRecord;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -24,6 +23,7 @@ public final class SeedData {
     int weeklyGoal;
     /** Volume for the 6 days before today, oldest first. */
     double[] previousSixDays = new double[6];
+
     int volumeChangePct;
 
     /** No history at all. */
@@ -40,11 +40,13 @@ public final class SeedData {
         s.session(Catalog.OVERHEAD_PRESS, same(3, 110, 5)).pr(Catalog.OVERHEAD_PRESS, 115, 24);
         s.session(Catalog.SQUAT, same(3, 275, 5)).pr(Catalog.SQUAT, 315, 9);
         s.session(Catalog.DEADLIFT, same(1, 365, 5)).pr(Catalog.DEADLIFT, 405, 2);
-        s.session(Catalog.INCLINE_DB, Arrays.asList(
-                new SetRecord(50, 12, 8), new SetRecord(50, 11, 8), new SetRecord(50, 10, 8)))
+        s.session(
+                        Catalog.INCLINE_DB,
+                        Arrays.asList(new SetRecord(50, 12, 8), new SetRecord(50, 11, 8), new SetRecord(50, 10, 8)))
                 .pr(Catalog.INCLINE_DB, 55, 24);
-        s.session(Catalog.PUSHDOWN, Arrays.asList(
-                new SetRecord(60, 15, 10), new SetRecord(60, 15, 10), new SetRecord(60, 15, 10)))
+        s.session(
+                        Catalog.PUSHDOWN,
+                        Arrays.asList(new SetRecord(60, 15, 10), new SetRecord(60, 15, 10), new SetRecord(60, 15, 10)))
                 .pr(Catalog.PUSHDOWN, 70, 24);
         s.streakDays = 12;
         s.bestStreak = 21;

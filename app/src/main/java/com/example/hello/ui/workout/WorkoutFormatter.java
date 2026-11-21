@@ -25,9 +25,12 @@ final class WorkoutFormatter {
 
     static String reps(SetEntry s) {
         switch (s.status()) {
-            case SHORT: return "× " + s.reps() + " / " + s.target;
-            case DONE: return "× " + s.reps();
-            default: return "× " + s.target;
+            case SHORT:
+                return "× " + s.reps() + " / " + s.target;
+            case DONE:
+                return "× " + s.reps();
+            default:
+                return "× " + s.target;
         }
     }
 
@@ -53,12 +56,18 @@ final class WorkoutFormatter {
 
     static String summaryMessage(WorkoutSummary s) {
         StringBuilder msg = new StringBuilder();
-        msg.append(Formats.thousands(s.volume)).append(" lb lifted across ").append(s.sets)
+        msg.append(Formats.thousands(s.volume))
+                .append(" lb lifted across ")
+                .append(s.sets)
                 .append(s.sets == 1 ? " set." : " sets.");
         if (!s.newRecords.isEmpty()) {
             msg.append("\n\nNew personal records:");
             for (WorkoutSummary.NewRecord r : s.newRecords) {
-                msg.append("\n🏆  ").append(r.exercise.name).append(" · ").append(Weights.format(r.weight)).append(" lb");
+                msg.append("\n🏆  ")
+                        .append(r.exercise.name)
+                        .append(" · ")
+                        .append(Weights.format(r.weight))
+                        .append(" lb");
             }
         }
         msg.append("\n\nYour next targets are ready on the home screen.");

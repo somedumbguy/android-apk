@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Full coding-standards check before every push: formatting, duplication, compiler
+# warnings, Android Lint, unit and architecture tests, and test coverage.
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+
+if ! ./gradlew --quiet check; then
+    echo
+    echo "./gradlew check failed, so nothing was pushed. Fix the problems above and push again."
+    exit 1
+fi

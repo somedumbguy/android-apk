@@ -5,7 +5,6 @@ import com.example.hello.domain.history.WorkoutRepository;
 import com.example.hello.domain.model.Exercise;
 import com.example.hello.domain.model.PersonalRecord;
 import com.example.hello.domain.model.SetRecord;
-
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -63,34 +62,41 @@ public final class InMemoryWorkoutRepository implements WorkoutRepository {
 
     // ---- WorkoutRepository ----
 
-    @Override public List<SetRecord> lastSession(Exercise e) {
+    @Override
+    public List<SetRecord> lastSession(Exercise e) {
         List<SetRecord> s = sessions.get(e.id);
         return s == null ? new ArrayList<>() : new ArrayList<>(s);
     }
 
-    @Override public int consecutiveFails(Exercise e) {
+    @Override
+    public int consecutiveFails(Exercise e) {
         Integer n = fails.get(e.id);
         return n == null ? 0 : n;
     }
 
-    @Override public Optional<PersonalRecord> personalRecord(Exercise e) {
+    @Override
+    public Optional<PersonalRecord> personalRecord(Exercise e) {
         return Optional.ofNullable(records.get(e.id));
     }
 
-    @Override public void saveSession(Exercise e, List<SetRecord> sets, int consecutiveFails) {
+    @Override
+    public void saveSession(Exercise e, List<SetRecord> sets, int consecutiveFails) {
         sessions.put(e.id, new ArrayList<>(sets));
         fails.put(e.id, consecutiveFails);
     }
 
-    @Override public void savePersonalRecord(PersonalRecord r) {
+    @Override
+    public void savePersonalRecord(PersonalRecord r) {
         records.put(r.exerciseId, r);
     }
 
-    @Override public void addVolume(LocalDate day, double volume) {
+    @Override
+    public void addVolume(LocalDate day, double volume) {
         volumes.put(day, volumeOn(day) + volume);
     }
 
-    @Override public ActivitySummary activity(LocalDate today) {
+    @Override
+    public ActivitySummary activity(LocalDate today) {
         double[] last7 = new double[7];
         int workouts = 0;
         for (int i = 0; i < 7; i++) {

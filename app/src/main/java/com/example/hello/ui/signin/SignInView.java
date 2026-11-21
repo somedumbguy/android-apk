@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.example.hello.ui.common.Palette;
 import com.example.hello.ui.common.Screens;
 import com.example.hello.ui.common.Ui;
@@ -34,8 +33,8 @@ public final class SignInView {
 
         TextView mark = Ui.text(c, "OVERLOAD", 14, Palette.LIME, Typeface.DEFAULT_BOLD);
         mark.setLetterSpacing(0.3f);
-        FrameLayout.LayoutParams markLp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.START);
+        FrameLayout.LayoutParams markLp = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.START);
         markLp.topMargin = Ui.dp(c, 24);
         markLp.leftMargin = Ui.dp(c, 28);
         safe.addView(mark, markLp);
@@ -50,9 +49,11 @@ public final class SignInView {
         headline.setPadding(0, Ui.dp(c, 18), 0, 0);
         col.addView(headline);
 
-        TextView sub = Ui.text(c,
+        TextView sub = Ui.text(
+                c,
                 "Your AI spotter predicts your next weight and handles the data entry, so you can focus on the lift.",
-                16, Palette.MUTED);
+                16,
+                Palette.MUTED);
         sub.setLineSpacing(0, 1.25f);
         sub.setPadding(0, Ui.dp(c, 16), 0, 0);
         col.addView(sub);
@@ -70,8 +71,10 @@ public final class SignInView {
             col.addView(note);
         }
 
-        safe.addView(col, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM));
+        safe.addView(
+                col,
+                new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM));
         Screens.staggerIn(col, 120, 90);
         return root;
     }

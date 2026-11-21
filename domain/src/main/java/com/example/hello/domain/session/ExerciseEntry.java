@@ -3,7 +3,6 @@ package com.example.hello.domain.session;
 import com.example.hello.domain.model.Exercise;
 import com.example.hello.domain.model.SetRecord;
 import com.example.hello.domain.model.Suggestion;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,8 +15,8 @@ public final class ExerciseEntry {
     public final List<SetEntry> warmups;
     public final List<SetEntry> work;
 
-    public ExerciseEntry(Exercise exercise, Suggestion suggestion, boolean prAttempt,
-                         List<SetEntry> warmups, List<SetEntry> work) {
+    public ExerciseEntry(
+            Exercise exercise, Suggestion suggestion, boolean prAttempt, List<SetEntry> warmups, List<SetEntry> work) {
         this.exercise = exercise;
         this.suggestion = suggestion;
         this.prAttempt = prAttempt;

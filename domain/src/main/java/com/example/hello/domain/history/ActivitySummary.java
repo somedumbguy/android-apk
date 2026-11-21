@@ -10,8 +10,13 @@ public final class ActivitySummary {
     public final int volumeChangePct;
 
     /** @param last7DaysVolume volume for each of the last 7 days, oldest first; the last is today */
-    public ActivitySummary(int streakDays, int bestStreak, int workoutsThisWeek, int weeklyGoal,
-                           double[] last7DaysVolume, int volumeChangePct) {
+    public ActivitySummary(
+            int streakDays,
+            int bestStreak,
+            int workoutsThisWeek,
+            int weeklyGoal,
+            double[] last7DaysVolume,
+            int volumeChangePct) {
         if (last7DaysVolume.length != 7) throw new IllegalArgumentException("need 7 days");
         this.streakDays = streakDays;
         this.bestStreak = bestStreak;

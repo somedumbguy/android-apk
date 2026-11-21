@@ -8,13 +8,15 @@ import org.junit.Test;
 
 public class SetEntryTest {
 
-    @Test public void startsPending() {
+    @Test
+    public void startsPending() {
         SetEntry s = new SetEntry(190, 5, false);
         assertFalse(s.isDone());
         assertEquals(SetEntry.Status.PENDING, s.status());
     }
 
-    @Test public void toggleCompletesThenUndoes() {
+    @Test
+    public void toggleCompletesThenUndoes() {
         SetEntry s = new SetEntry(190, 5, false);
         assertTrue(s.toggle());
         assertEquals(5, s.reps());
@@ -23,7 +25,8 @@ public class SetEntryTest {
         assertEquals(SetEntry.Status.PENDING, s.status());
     }
 
-    @Test public void fewerRepsThanTargetIsShort() {
+    @Test
+    public void fewerRepsThanTargetIsShort() {
         SetEntry s = new SetEntry(190, 5, false);
         s.record(3);
         assertEquals(SetEntry.Status.SHORT, s.status());
@@ -31,7 +34,8 @@ public class SetEntryTest {
         assertEquals(SetEntry.Status.DONE, s.status());
     }
 
-    @Test public void zeroRepsCountsAsDone() {
+    @Test
+    public void zeroRepsCountsAsDone() {
         SetEntry s = new SetEntry(190, 5, false);
         s.record(0);
         assertTrue(s.isDone());

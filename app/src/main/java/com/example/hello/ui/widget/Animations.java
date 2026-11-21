@@ -2,7 +2,6 @@ package com.example.hello.ui.widget;
 
 import android.animation.ValueAnimator;
 import android.view.animation.DecelerateInterpolator;
-
 import java.util.function.Consumer;
 
 /** Shared animation helper for the custom chart views. */

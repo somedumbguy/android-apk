@@ -11,7 +11,6 @@ import com.example.hello.domain.model.Weights;
 import com.example.hello.domain.progression.Intensity;
 import com.example.hello.domain.training.TrainingService;
 import com.example.hello.ui.format.Formats;
-
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;

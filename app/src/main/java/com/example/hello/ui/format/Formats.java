@@ -1,7 +1,6 @@
 package com.example.hello.ui.format;
 
 import com.example.hello.domain.model.Weights;
-
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;

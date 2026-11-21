@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.example.hello.ui.common.Ui;
 
 /**
@@ -32,11 +31,13 @@ public final class MockAuthProvider implements AuthProvider {
         this.store = store;
     }
 
-    @Override public User getCurrentUser() {
+    @Override
+    public User getCurrentUser() {
         return store.load();
     }
 
-    @Override public void signIn(Activity activity, Callback callback) {
+    @Override
+    public void signIn(Activity activity, Callback callback) {
         int pad = Ui.dp(activity, 24);
         LinearLayout sheet = new LinearLayout(activity);
         sheet.setOrientation(LinearLayout.VERTICAL);
@@ -64,8 +65,8 @@ public final class MockAuthProvider implements AuthProvider {
         sheet.addView(row);
 
         Button cont = Ui.pillButton(activity, "Continue as " + MOCK_USER.getFirstName(), 0xFF0B57D0, Color.WHITE, 0);
-        LinearLayout.LayoutParams contLp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(activity, 48));
+        LinearLayout.LayoutParams contLp =
+                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(activity, 48));
         contLp.topMargin = Ui.dp(activity, 28);
         sheet.addView(cont, contLp);
 
@@ -75,20 +76,24 @@ public final class MockAuthProvider implements AuthProvider {
             cont.setEnabled(false);
             cont.setText("Signing in…");
             dialog.setCancelable(false);
-            main.postDelayed(() -> {
-                store.save(MOCK_USER);
-                dialog.dismiss();
-                callback.onSignedIn(MOCK_USER);
-            }, FAKE_DELAY_MS);
+            main.postDelayed(
+                    () -> {
+                        store.save(MOCK_USER);
+                        dialog.dismiss();
+                        callback.onSignedIn(MOCK_USER);
+                    },
+                    FAKE_DELAY_MS);
         });
     }
 
-    @Override public void signOut(Runnable onComplete) {
+    @Override
+    public void signOut(Runnable onComplete) {
         store.clear();
         main.post(onComplete);
     }
 
-    @Override public boolean isMock() {
+    @Override
+    public boolean isMock() {
         return true;
     }
 }

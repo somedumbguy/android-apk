@@ -7,11 +7,13 @@ import com.example.hello.domain.progression.Intensity;
 public final class InMemorySettingsRepository implements SettingsRepository {
     private Intensity intensity = Intensity.BUILD;
 
-    @Override public Intensity intensity() {
+    @Override
+    public Intensity intensity() {
         return intensity;
     }
 
-    @Override public void setIntensity(Intensity intensity) {
+    @Override
+    public void setIntensity(Intensity intensity) {
         this.intensity = intensity;
     }
 }

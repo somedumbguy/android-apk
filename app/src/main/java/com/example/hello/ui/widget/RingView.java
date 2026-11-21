@@ -6,7 +6,6 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.SweepGradient;
 import android.view.View;
-
 import com.example.hello.ui.common.Palette;
 import com.example.hello.ui.common.Ui;
 
@@ -65,8 +64,7 @@ public final class RingView extends View {
         float s = Math.min(w, h);
         float pad = stroke / 2 + 1;
         oval.set((w - s) / 2 + pad, (h - s) / 2 + pad, (w + s) / 2 - pad, (h + s) / 2 - pad);
-        arc.setShader(new SweepGradient(w / 2f, h / 2f,
-                new int[] {Palette.MINT, Palette.LIME, Palette.MINT}, null));
+        arc.setShader(new SweepGradient(w / 2f, h / 2f, new int[] {Palette.MINT, Palette.LIME, Palette.MINT}, null));
     }
 
     @Override

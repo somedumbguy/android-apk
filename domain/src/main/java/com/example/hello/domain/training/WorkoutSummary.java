@@ -1,7 +1,6 @@
 package com.example.hello.domain.training;
 
 import com.example.hello.domain.model.Exercise;
-
 import java.util.Collections;
 import java.util.List;
 

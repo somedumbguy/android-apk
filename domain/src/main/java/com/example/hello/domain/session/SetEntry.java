@@ -4,7 +4,11 @@ import com.example.hello.domain.model.SetRecord;
 
 /** One planned set in a workout, and what was actually done. */
 public final class SetEntry {
-    public enum Status { PENDING, DONE, SHORT }
+    public enum Status {
+        PENDING,
+        DONE,
+        SHORT
+    }
 
     private static final int NOT_DONE = -1;
 

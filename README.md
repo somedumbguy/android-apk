@@ -16,10 +16,13 @@ working name.)
 Requires JDK 17+ and the Android SDK (set `sdk.dir` in `local.properties`, or `ANDROID_HOME`).
 
 ```bash
-./gradlew test             # all unit tests (domain + app), no device needed
-./gradlew lintDebug        # Android Lint
+./gradlew check            # every coding-standards check (see CLAUDE.md)
+./gradlew spotlessApply    # fix formatting
 ./gradlew assembleDebug    # app/build/outputs/apk/debug/app-debug.apk
 ```
+
+Coding standards are enforced automatically by the build, git hooks, a Claude Code hook
+and GitHub Actions. [CLAUDE.md](CLAUDE.md) lists every rule and what enforces it.
 
 To sign debug builds with a shared key (so builds install as updates and keep the same
 fingerprint for Google Sign-In), copy `keystore.properties.example` to

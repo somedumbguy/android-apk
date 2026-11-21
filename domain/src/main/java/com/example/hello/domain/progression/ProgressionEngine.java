@@ -4,7 +4,6 @@ import com.example.hello.domain.model.Exercise;
 import com.example.hello.domain.model.Scheme;
 import com.example.hello.domain.model.SetRecord;
 import com.example.hello.domain.model.Suggestion;
-
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
@@ -32,7 +31,11 @@ public final class ProgressionEngine {
         if (last == null || last.isEmpty()) {
             int[] reps = new int[e.sets];
             Arrays.fill(reps, e.minReps);
-            return new Suggestion(e, e.isBarbell() ? FIRST_SESSION_BARBELL : 0, reps, 0,
+            return new Suggestion(
+                    e,
+                    e.isBarbell() ? FIRST_SESSION_BARBELL : 0,
+                    reps,
+                    0,
                     "First time? Start light and I'll take it from there.");
         }
         ProgressionStrategy s = strategies.get(e.scheme);

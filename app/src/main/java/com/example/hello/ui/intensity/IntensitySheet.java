@@ -7,7 +7,6 @@ import android.view.Gravity;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.example.hello.domain.progression.Intensity;
 import com.example.hello.ui.common.Palette;
 import com.example.hello.ui.common.Ui;
@@ -20,8 +19,12 @@ public final class IntensitySheet {
     private final TextView description;
     private final LinearLayout rows;
 
-    private IntensitySheet(Activity activity, IntensityPresenter presenter, LinearLayout segments,
-                           TextView description, LinearLayout rows) {
+    private IntensitySheet(
+            Activity activity,
+            IntensityPresenter presenter,
+            LinearLayout segments,
+            TextView description,
+            LinearLayout rows) {
         this.activity = activity;
         this.presenter = presenter;
         this.segments = segments;
@@ -54,8 +57,8 @@ public final class IntensitySheet {
         LinearLayout rows = Ui.column(a);
         sheet.addView(rows);
 
-        TextView foot = Ui.text(a, "Estimates from your current numbers, the jump size and expected misses.",
-                12, Palette.MUTED);
+        TextView foot = Ui.text(
+                a, "Estimates from your current numbers, the jump size and expected misses.", 12, Palette.MUTED);
         foot.setPadding(0, Ui.dp(a, 12), 0, 0);
         sheet.addView(foot);
 

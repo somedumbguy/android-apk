@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Fast check before every commit: formatting only. The full check runs before push.
+# Installed automatically by any Android build (see installGitHooks in build.gradle.kts).
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+
+if ! ./gradlew --quiet spotlessCheck; then
+    echo
+    echo "Formatting doesn't match the project style."
+    echo "Run ./gradlew spotlessApply, then stage the changes and commit again."
+    exit 1
+fi

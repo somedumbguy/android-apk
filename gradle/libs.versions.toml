@@ -2,12 +2,20 @@
 agp = "9.5.0"
 androidx-activity = "1.13.0"
 androidx-core = "1.19.1"
+archunit = "1.5.1"
+cpd = "3.5"
 junit = "4.13.2"
+palantir-java-format = "2.101.0"
+pmd = "7.28.0"
+spotless = "8.9.0"
 
 [libraries]
 androidx-activity = { module = "androidx.activity:activity", version.ref = "androidx-activity" }
 androidx-core = { module = "androidx.core:core", version.ref = "androidx-core" }
+archunit = { module = "com.tngtech.archunit:archunit-junit4", version.ref = "archunit" }
 junit = { module = "junit:junit", version.ref = "junit" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+cpd = { id = "de.aaschmid.cpd", version.ref = "cpd" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

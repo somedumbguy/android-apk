@@ -16,7 +16,6 @@ import com.example.hello.domain.progression.ProgressionEngine;
 import com.example.hello.domain.session.ExerciseEntry;
 import com.example.hello.domain.session.SetEntry;
 import com.example.hello.domain.session.WorkoutSession;
-
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -35,8 +34,13 @@ public final class TrainingService {
     private final PlateMath plates;
     private final Clock clock;
 
-    public TrainingService(WorkoutRepository workouts, SettingsRepository settings, ProgressionEngine engine,
-                           Forecaster forecaster, PlateMath plates, Clock clock) {
+    public TrainingService(
+            WorkoutRepository workouts,
+            SettingsRepository settings,
+            ProgressionEngine engine,
+            Forecaster forecaster,
+            PlateMath plates,
+            Clock clock) {
         this.workouts = workouts;
         this.settings = settings;
         this.engine = engine;

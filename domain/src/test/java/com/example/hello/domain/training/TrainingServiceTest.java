@@ -13,50 +13,58 @@ import com.example.hello.domain.progression.Intensity;
 import com.example.hello.domain.session.ExerciseEntry;
 import com.example.hello.domain.session.SetEntry;
 import com.example.hello.domain.session.WorkoutSession;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import java.time.LocalDate;
 import java.util.Arrays;
+import org.junit.Before;
+import org.junit.Test;
 
 public class TrainingServiceTest {
     private TestTraining t;
     private final WorkoutPlan benchAndDb = new WorkoutPlan("Test", Arrays.asList(Catalog.BENCH, Catalog.INCLINE_DB));
 
-    @Before public void setUp() {
+    @Before
+    public void setUp() {
         t = new TestTraining();
-        t.workouts.withCleanSession(Catalog.BENCH, 185)
+        t.workouts
+                .withCleanSession(Catalog.BENCH, 185)
                 .withPr(Catalog.BENCH, 185, TestClocks.daysAgo(14))
-                .withSession(Catalog.INCLINE_DB,
-                        new SetRecord(50, 12, 8), new SetRecord(50, 11, 8), new SetRecord(50, 10, 8));
+                .withSession(
+                        Catalog.INCLINE_DB,
+                        new SetRecord(50, 12, 8),
+                        new SetRecord(50, 11, 8),
+                        new SetRecord(50, 10, 8));
     }
 
     private static void completeAll(ExerciseEntry e) {
         for (SetEntry s : e.work) s.complete();
     }
 
-    @Test public void suggestionUsesTheSavedIntensity() {
+    @Test
+    public void suggestionUsesTheSavedIntensity() {
         assertEquals(190, t.service.suggest(Catalog.BENCH).weight, 0);
         t.service.setIntensity(Intensity.SEND_IT);
         assertEquals(192.5, t.service.suggest(Catalog.BENCH).weight, 0);
     }
 
-    @Test public void prAttemptWhenPrescriptionBeatsThePr() {
+    @Test
+    public void prAttemptWhenPrescriptionBeatsThePr() {
         assertTrue(t.service.isPrAttempt(t.service.suggest(Catalog.BENCH)));
         t.workouts.withPr(Catalog.BENCH, 200, TestClocks.NOW);
         assertFalse(t.service.isPrAttempt(t.service.suggest(Catalog.BENCH)));
     }
 
-    @Test public void noPrRecordedMeansNoPrAttemptBadge() {
+    @Test
+    public void noPrRecordedMeansNoPrAttemptBadge() {
         assertFalse(t.service.isPrAttempt(t.service.suggest(Catalog.SQUAT)));
     }
 
-    @Test public void forecastTargetsTheMilestoneAboveThePr() {
+    @Test
+    public void forecastTargetsTheMilestoneAboveThePr() {
         assertEquals(225, t.service.forecastNextMilestone(Catalog.BENCH, Intensity.BUILD).target, 0);
     }
 
-    @Test public void startSessionAddsWarmupsOnlyForBarbellLifts() {
+    @Test
+    public void startSessionAddsWarmupsOnlyForBarbellLifts() {
         WorkoutSession s = t.service.startSession(benchAndDb);
         ExerciseEntry bench = s.entries.get(0);
         ExerciseEntry db = s.entries.get(1);
@@ -68,7 +76,8 @@ public class TrainingServiceTest {
         assertEquals(6, s.totalWorkSets());
     }
 
-    @Test public void completingSavesSetsAndProgressesNextTime() {
+    @Test
+    public void completingSavesSetsAndProgressesNextTime() {
         WorkoutSession s = t.service.startSession(benchAndDb);
         completeAll(s.entries.get(0));
         WorkoutSummary summary = t.service.complete(s);
@@ -78,7 +87,8 @@ public class TrainingServiceTest {
         assertEquals(195, t.service.suggest(Catalog.BENCH).weight, 0);
     }
 
-    @Test public void beatingThePrIsRecorded() {
+    @Test
+    public void beatingThePrIsRecorded() {
         WorkoutSession s = t.service.startSession(benchAndDb);
         completeAll(s.entries.get(0));
         WorkoutSummary summary = t.service.complete(s);
@@ -89,13 +99,15 @@ public class TrainingServiceTest {
         assertEquals(TestClocks.NOW, t.service.personalRecord(Catalog.BENCH).get().achievedAt);
     }
 
-    @Test public void zeroRepSetsDoNotCountTowardAPr() {
+    @Test
+    public void zeroRepSetsDoNotCountTowardAPr() {
         WorkoutSession s = t.service.startSession(benchAndDb);
         for (SetEntry set : s.entries.get(0).work) set.record(0);
         assertTrue(t.service.complete(s).newRecords.isEmpty());
     }
 
-    @Test public void untouchedExercisesAreNotSaved() {
+    @Test
+    public void untouchedExercisesAreNotSaved() {
         WorkoutSession s = t.service.startSession(benchAndDb);
         completeAll(s.entries.get(0));
         t.service.complete(s);
@@ -103,7 +115,8 @@ public class TrainingServiceTest {
         assertEquals(12, t.workouts.lastSession(Catalog.INCLINE_DB).get(0).reps);
     }
 
-    @Test public void missesAccumulateAndHitsReset() {
+    @Test
+    public void missesAccumulateAndHitsReset() {
         WorkoutSession s = t.service.startSession(benchAndDb);
         s.entries.get(0).work.get(0).record(3);
         t.service.complete(s);
@@ -120,9 +133,12 @@ public class TrainingServiceTest {
         assertEquals(0, t.workouts.consecutiveFails(Catalog.BENCH));
     }
 
-    @Test public void aMissAfterADeloadStartsTheCountOver() {
-        t.workouts.withFails(Catalog.BENCH, 3).withSession(Catalog.BENCH,
-                new SetRecord(205, 5, 5), new SetRecord(205, 4, 5), new SetRecord(205, 3, 5));
+    @Test
+    public void aMissAfterADeloadStartsTheCountOver() {
+        t.workouts
+                .withFails(Catalog.BENCH, 3)
+                .withSession(
+                        Catalog.BENCH, new SetRecord(205, 5, 5), new SetRecord(205, 4, 5), new SetRecord(205, 3, 5));
         WorkoutSession s = t.service.startSession(benchAndDb);
         assertEquals(185, s.entries.get(0).suggestion.weight, 0);
         s.entries.get(0).work.get(0).record(2);
@@ -130,7 +146,8 @@ public class TrainingServiceTest {
         assertEquals(1, t.workouts.consecutiveFails(Catalog.BENCH));
     }
 
-    @Test public void volumeIsAddedToToday() {
+    @Test
+    public void volumeIsAddedToToday() {
         WorkoutSession s = t.service.startSession(benchAndDb);
         completeAll(s.entries.get(0));
         t.service.complete(s);
@@ -138,7 +155,8 @@ public class TrainingServiceTest {
         assertEquals(190 * 15, t.service.activity().last7DaysVolume()[6], 0);
     }
 
-    @Test public void finishingWithNothingDoneSavesNothing() {
+    @Test
+    public void finishingWithNothingDoneSavesNothing() {
         WorkoutSummary summary = t.service.complete(t.service.startSession(benchAndDb));
         assertEquals(0, summary.sets);
         assertEquals(0, t.workouts.volumeOn(LocalDate.of(2026, 11, 21)), 0);
