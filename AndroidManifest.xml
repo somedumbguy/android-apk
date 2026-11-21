@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.hello" android:versionCode="2" android:versionName="2.0">
+    package="com.example.hello" android:versionCode="3" android:versionName="3.0">
     <uses-sdk android:minSdkVersion="23" android:targetSdkVersion="34" />
-    <application android:label="Hello World" android:theme="@android:style/Theme.Material.Light">
+    <application android:label="Hello World" android:theme="@android:style/Theme.Material.Light.NoActionBar">
         <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

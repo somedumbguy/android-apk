@@ -1,11 +1,29 @@
 # Hello World Android app
 
-A minimal Android app that greets you by your Google account. It opens the system
-account picker, then shows "Hello, <account>!" and remembers the choice.
+A minimal Android app with a sign-in flow. Authentication currently uses a mock
+provider that signs in as a fake test user, so development can continue before
+Google Sign-In is set up.
 
 - Package: `com.example.hello`
 - Min Android version: 6.0 (API 23), target API 34
 - No Gradle: built directly with `aapt`, `dx` and `apksigner`
+
+## Authentication
+
+The app only talks to the `AuthProvider` interface in
+`src/com/example/hello/auth/`:
+
+| File | Purpose |
+| --- | --- |
+| `AuthProvider.java` | Interface: `getCurrentUser()`, `signIn()`, `signOut()`, `isMock()` |
+| `User.java` | The signed-in user (id, display name, email) |
+| `UserStore.java` | Remembers the user between launches |
+| `MockAuthProvider.java` | Fake provider: Google-style sheet, signs in as `Test User` |
+| `Auth.java` | Chooses the provider. **This is the only line to change.** |
+
+To switch to real Google Sign-In, add a `GoogleAuthProvider` that implements
+`AuthProvider` with Credential Manager and the Web client ID from Google Cloud
+Console, then return it from `Auth.create()`.
 
 ## Build
 
