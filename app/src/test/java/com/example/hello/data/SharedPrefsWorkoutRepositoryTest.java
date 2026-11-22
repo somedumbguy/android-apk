@@ -86,6 +86,14 @@ public class SharedPrefsWorkoutRepositoryTest {
     }
 
     @Test
+    public void programDefaultsToFullBodyAndCanBeChanged() {
+        SharedPrefsSettingsRepository settings = new SharedPrefsSettingsRepository(new InMemorySharedPreferences());
+        assertEquals("full_body_ab", settings.programId());
+        settings.setProgramId("push");
+        assertEquals("push", settings.programId());
+    }
+
+    @Test
     public void weeklyGoalDefaultsToThree() {
         assertEquals(3, new SharedPrefsSettingsRepository(new InMemorySharedPreferences()).weeklyGoal());
     }

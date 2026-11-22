@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import com.example.hello.app.AppContainer;
-import com.example.hello.domain.catalog.Catalog;
 
 /** Handles the rest notification's buttons and the end-of-rest alarm. */
 public final class RestActionReceiver extends BroadcastReceiver {
@@ -21,7 +20,7 @@ public final class RestActionReceiver extends BroadcastReceiver {
         RestController rest = app.restController();
         switch (action) {
             case ACTION_DONE:
-                app.quickLog(rest).logNextSet(Catalog.PUSH_DAY);
+                app.quickLog(rest).logNextSet(app.training.nextPlan());
                 break;
             case ACTION_ADD:
                 rest.addSeconds(30);

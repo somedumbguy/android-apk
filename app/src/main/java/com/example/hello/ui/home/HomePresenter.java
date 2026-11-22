@@ -8,6 +8,7 @@ import com.example.hello.domain.model.Exercise;
 import com.example.hello.domain.model.PersonalRecord;
 import com.example.hello.domain.model.Suggestion;
 import com.example.hello.domain.model.Weights;
+import com.example.hello.domain.model.WorkoutPlan;
 import com.example.hello.domain.progression.Intensity;
 import com.example.hello.domain.training.TrainingService;
 import com.example.hello.ui.format.Formats;
@@ -73,18 +74,19 @@ public final class HomePresenter {
     }
 
     private HomeState.Target target() {
-        Exercise e = Catalog.FEATURED;
+        WorkoutPlan plan = training.nextPlan();
+        Exercise e = plan.exercises.get(0);
         Suggestion s = training.suggest(e);
         boolean prAttempt = training.isPrAttempt(s);
         return new HomeState.Target(
                 training.intensity().label.toUpperCase(Locale.US),
-                "Today · " + Catalog.PUSH_DAY.name + " · " + e.name,
+                "Today · " + plan.name + " · " + e.name,
                 Weights.format(s.weight),
                 s.repsLabel(),
                 prAttempt,
                 prAttempt ? "🏆  PR ATTEMPT" : Formats.delta(s.delta),
                 s.reason,
-                training.hasWorkoutInProgress(Catalog.PUSH_DAY) ? "Resume workout   →" : "Start workout   →");
+                training.hasWorkoutInProgress(plan) ? "Resume workout   →" : "Start workout   →");
     }
 
     private HomeState.Stats stats(LocalDate today) {

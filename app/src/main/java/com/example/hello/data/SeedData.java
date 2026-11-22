@@ -35,6 +35,7 @@ public final class SeedData {
         s.session(Catalog.OVERHEAD_PRESS, same(3, 110, 5)).pr(Catalog.OVERHEAD_PRESS, 115, 24);
         s.session(Catalog.SQUAT, same(3, 275, 5)).pr(Catalog.SQUAT, 315, 9);
         s.session(Catalog.DEADLIFT, same(1, 365, 5)).pr(Catalog.DEADLIFT, 405, 2);
+        s.session(Catalog.BARBELL_ROW, same(3, 135, 5)).pr(Catalog.BARBELL_ROW, 145, 16);
         s.session(
                         Catalog.INCLINE_DB,
                         Arrays.asList(new SetRecord(50, 12, 8), new SetRecord(50, 11, 8), new SetRecord(50, 10, 8)))
@@ -57,7 +58,8 @@ public final class SeedData {
             DayOfWeek dow = d.getDayOfWeek();
             if (dow != DayOfWeek.MONDAY && dow != DayOfWeek.WEDNESDAY && dow != DayOfWeek.FRIDAY) continue;
             double volume = 5200 + (d.toEpochDay() * 37) % 1700;
-            out.add(new CompletedWorkout(d, Catalog.PUSH_DAY.name, volume, 12));
+            String plan = out.size() % 2 == 0 ? Catalog.WORKOUT_A.name : Catalog.WORKOUT_B.name;
+            out.add(new CompletedWorkout(d, plan, volume, 9));
         }
         return out;
     }

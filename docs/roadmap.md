@@ -33,8 +33,10 @@ items here in the same pull request that delivers them.
 
 ## 4. Product
 
-- [ ] **Programs:** A/B alternation (StrongLifts-style), an exercise library, and a
-      3-question onboarding that picks a program.
+- [x] **Programs with A/B alternation:** Full body A/B (default) and Push day; the next
+      workout follows from the last one logged (v0.12).
+- [ ] **Program picker and a 3-question onboarding** that picks a program for you.
+- [ ] **Exercise library** to build custom workouts.
 - [x] **Better PRs:** estimated one-rep max (Epley) on the record cards, and more reps at
       the same weight now counts as a PR (v0.11).
 - [ ] **Your gym's equipment:** kg or lb, bar weight, available plates and microplates.
