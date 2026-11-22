@@ -7,14 +7,19 @@ import com.example.hello.auth.MockAuthProvider;
 import com.example.hello.auth.UserStore;
 import com.example.hello.data.SeedData;
 import com.example.hello.data.SharedPrefsActiveWorkoutStore;
+import com.example.hello.data.SharedPrefsRestStore;
 import com.example.hello.data.SharedPrefsSettingsRepository;
 import com.example.hello.data.SharedPrefsWorkoutRepository;
 import com.example.hello.domain.forecast.Forecaster;
+import com.example.hello.domain.history.RestStore;
 import com.example.hello.domain.plates.PlateMath;
 import com.example.hello.domain.progression.ProgressionEngine;
 import com.example.hello.domain.training.TrainingService;
 import com.example.hello.ui.home.HomePresenter;
 import com.example.hello.ui.intensity.IntensityPresenter;
+import com.example.hello.ui.workout.QuickLog;
+import com.example.hello.ui.workout.RestController;
+import com.example.hello.ui.workout.RestNotifications;
 import java.time.Clock;
 import java.util.Locale;
 
@@ -30,6 +35,8 @@ public final class AppContainer {
     public final PlateMath plates;
     public final TrainingService training;
     public final AuthProvider auth;
+    public final RestNotifications restNotifications;
+    private final RestStore restStore;
 
     public AppContainer(Context context) {
         Context app = context.getApplicationContext();
@@ -44,6 +51,17 @@ public final class AppContainer {
                 plates,
                 clock);
         auth = new MockAuthProvider(new UserStore(prefs(app, "auth")));
+        restStore = new SharedPrefsRestStore(prefs(app, "rest"));
+        restNotifications = new RestNotifications(app);
+    }
+
+    /** The shared rest timer; its state is saved, so every instance agrees. */
+    public RestController restController() {
+        return new RestController(clock::millis, restStore, restNotifications);
+    }
+
+    public QuickLog quickLog(RestController rest) {
+        return new QuickLog(training, rest);
     }
 
     public HomePresenter homePresenter() {

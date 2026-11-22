@@ -90,4 +90,16 @@ public class SharedPrefsWorkoutRepositoryTest {
         store.clear();
         assertFalse(store.load().isPresent());
     }
+
+    @Test
+    public void restStoreSavesLoadsAndClears() {
+        SharedPrefsRestStore store = new SharedPrefsRestStore(new InMemorySharedPreferences());
+        assertFalse(store.load().isPresent());
+        store.save(new com.example.hello.domain.history.RestStore.Rest(5000, 90_000, "Squat"));
+        assertEquals(5000, store.load().get().endsAtMillis);
+        assertEquals(90_000, store.load().get().totalMs);
+        assertEquals("Squat", store.load().get().next);
+        store.clear();
+        assertFalse(store.load().isPresent());
+    }
 }

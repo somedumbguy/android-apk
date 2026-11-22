@@ -7,8 +7,8 @@ items here in the same pull request that delivers them.
 
 - [x] **Don't lose a workout on rotation or when Android closes the app.** Progress is saved
       after every tap and restored when the screen comes back (v0.7).
-- [ ] **Rest timer that survives leaving the app.** Run it as a foreground service with a
-      notification, including Done / Skip actions for lock-screen logging.
+- [x] **Rest timer that survives leaving the app.** A live countdown notification with
+      Done / +30s / Skip buttons (lock-screen logging) and an alarm when rest is over (v0.8).
 - [ ] **Real package name.** `com.example.hello` can't be published on Google Play and can
       never change after the first upload. *Waiting on a decision: what should it be?*
 - [ ] **Real workout history.** Replace demo streak, weekly goal and earlier days' volume

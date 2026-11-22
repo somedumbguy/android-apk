@@ -20,6 +20,21 @@ public final class RestTimer {
         running = true;
     }
 
+    /** Picks up a rest that was already running, e.g. after the screen was recreated. */
+    public void restore(long endsAtMs, long totalMs) {
+        this.endsAt = endsAtMs;
+        this.totalMs = totalMs;
+        running = true;
+    }
+
+    public long endsAt() {
+        return endsAt;
+    }
+
+    public long totalMs() {
+        return totalMs;
+    }
+
     public void addSeconds(int seconds) {
         if (!running) return;
         endsAt += seconds * 1000L;

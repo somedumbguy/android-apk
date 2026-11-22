@@ -46,4 +46,17 @@ public class SetEntryTest {
     public void negativeRepsAreRejected() {
         new SetEntry(190, 5, false).record(-1);
     }
+
+    @Test
+    public void nextPendingWorkSetSkipsDoneSetsAndWarmups() {
+        com.example.hello.domain.fakes.TestTraining t = new com.example.hello.domain.fakes.TestTraining();
+        t.workouts.withCleanSession(com.example.hello.domain.catalog.Catalog.BENCH, 185);
+        WorkoutSession s = t.service.startSession(new com.example.hello.domain.model.WorkoutPlan(
+                "Test", java.util.Arrays.asList(com.example.hello.domain.catalog.Catalog.BENCH)));
+        assertTrue(s.nextPendingWorkSet().get() == s.entries.get(0).work.get(0));
+        s.entries.get(0).work.get(0).complete();
+        assertTrue(s.nextPendingWorkSet().get() == s.entries.get(0).work.get(1));
+        for (SetEntry set : s.entries.get(0).work) set.complete();
+        assertFalse(s.nextPendingWorkSet().isPresent());
+    }
 }
