@@ -34,6 +34,7 @@ import com.example.hello.ui.common.Palette;
 import com.example.hello.ui.common.Screens;
 import com.example.hello.ui.common.Ui;
 import com.example.hello.ui.format.Formats;
+import java.time.Clock;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,6 +60,7 @@ public class WorkoutActivity extends ComponentActivity {
     }
 
     private TrainingService training;
+    private Clock clock;
     private PlateMath plates;
     private WorkoutSession session;
     private final Map<SetEntry, SetViews> setViews = new HashMap<>();
@@ -80,7 +82,9 @@ public class WorkoutActivity extends ComponentActivity {
         AppContainer container = AppContainer.from(this);
         training = container.training;
         plates = container.plates;
-        session = training.startSession(Catalog.PUSH_DAY);
+        clock = container.clock;
+        // Picks up where you left off after a rotation or if Android closed the app.
+        session = training.resumeOrStart(Catalog.PUSH_DAY);
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -145,7 +149,8 @@ public class WorkoutActivity extends ComponentActivity {
         clock.setTextColor(Palette.LIME);
         clock.setTextSize(16);
         clock.setTypeface(Typeface.DEFAULT_BOLD);
-        clock.setBase(SystemClock.elapsedRealtime());
+        long elapsed = Math.max(0, this.clock.millis() - session.startedAt.toEpochMilli());
+        clock.setBase(SystemClock.elapsedRealtime() - elapsed);
         clock.start();
         row.addView(clock);
         return row;
@@ -214,8 +219,12 @@ public class WorkoutActivity extends ComponentActivity {
 
         setViews.put(set, new SetViews(check, reps));
         View.OnClickListener toggle = v -> {
-            if (set.toggle()) onSetDone(set);
-            else render(set);
+            if (set.toggle()) {
+                onSetDone(set);
+            } else {
+                render(set);
+                training.saveProgress(session);
+            }
         };
         check.setOnClickListener(toggle);
         row.setOnClickListener(toggle);
@@ -293,6 +302,7 @@ public class WorkoutActivity extends ComponentActivity {
 
     private void onSetDone(SetEntry set) {
         render(set);
+        training.saveProgress(session);
         TextView check = setViews.get(set).check;
         check.setScaleX(0.7f);
         check.setScaleY(0.7f);
@@ -372,15 +382,20 @@ public class WorkoutActivity extends ComponentActivity {
     }
 
     private void confirmLeave() {
-        if (!session.hasProgress()) {
+        if (!session.hasAnySetDone()) {
+            training.discard();
             finish();
             return;
         }
         new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert)
-                .setTitle("Discard this workout?")
-                .setMessage("The sets you've checked off won't be saved.")
-                .setPositiveButton("Discard", (d, w) -> finish())
-                .setNegativeButton("Keep going", null)
+                .setTitle("Leave this workout?")
+                .setMessage("Keep it to pick up where you left off today, or discard the sets you've checked off.")
+                .setPositiveButton("Keep for later", (d, w) -> finish())
+                .setNeutralButton("Discard", (d, w) -> {
+                    training.discard();
+                    finish();
+                })
+                .setNegativeButton("Cancel", null)
                 .show();
     }
 

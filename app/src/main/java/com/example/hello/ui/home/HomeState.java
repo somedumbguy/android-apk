@@ -34,6 +34,8 @@ public final class HomeState {
         public final String badge;
 
         public final String reason;
+        /** "Start workout" or, with one in progress today, "Resume workout". */
+        public final String action;
 
         Target(
                 String intensity,
@@ -42,7 +44,8 @@ public final class HomeState {
                 String reps,
                 boolean prAttempt,
                 String badge,
-                String reason) {
+                String reason,
+                String action) {
             this.intensity = intensity;
             this.context = context;
             this.weight = weight;
@@ -50,6 +53,7 @@ public final class HomeState {
             this.prAttempt = prAttempt;
             this.badge = badge;
             this.reason = reason;
+            this.action = action;
         }
     }
 

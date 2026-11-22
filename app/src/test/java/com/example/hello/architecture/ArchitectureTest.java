@@ -5,9 +5,11 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noFields;
 
 import com.example.hello.app.AppContainer;
 import com.example.hello.auth.MockAuthProvider;
+import com.example.hello.data.SharedPrefsActiveWorkoutStore;
 import com.example.hello.data.SharedPrefsSettingsRepository;
 import com.example.hello.data.SharedPrefsWorkoutRepository;
 import com.example.hello.domain.forecast.Forecaster;
+import com.example.hello.domain.history.ActiveWorkoutStore;
 import com.example.hello.domain.history.SettingsRepository;
 import com.example.hello.domain.history.WorkoutRepository;
 import com.example.hello.domain.plates.PlateMath;
@@ -126,6 +128,8 @@ public class ArchitectureTest {
                 .orShould()
                 .callConstructor(SharedPrefsSettingsRepository.class, android.content.SharedPreferences.class)
                 .orShould()
+                .callConstructor(SharedPrefsActiveWorkoutStore.class, android.content.SharedPreferences.class)
+                .orShould()
                 .callConstructor(MockAuthProvider.class, com.example.hello.auth.UserStore.class)
                 .orShould()
                 .callConstructor(Forecaster.class, Clock.class)
@@ -134,6 +138,7 @@ public class ArchitectureTest {
                         TrainingService.class,
                         WorkoutRepository.class,
                         SettingsRepository.class,
+                        ActiveWorkoutStore.class,
                         ProgressionEngine.class,
                         Forecaster.class,
                         PlateMath.class,

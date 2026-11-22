@@ -6,6 +6,7 @@ import com.example.hello.auth.AuthProvider;
 import com.example.hello.auth.MockAuthProvider;
 import com.example.hello.auth.UserStore;
 import com.example.hello.data.SeedData;
+import com.example.hello.data.SharedPrefsActiveWorkoutStore;
 import com.example.hello.data.SharedPrefsSettingsRepository;
 import com.example.hello.data.SharedPrefsWorkoutRepository;
 import com.example.hello.domain.forecast.Forecaster;
@@ -37,6 +38,7 @@ public final class AppContainer {
         training = new TrainingService(
                 new SharedPrefsWorkoutRepository(prefs(app, "training"), SeedData.demo(), clock),
                 new SharedPrefsSettingsRepository(prefs(app, "settings")),
+                new SharedPrefsActiveWorkoutStore(prefs(app, "active_workout")),
                 ProgressionEngine.standard(),
                 new Forecaster(clock),
                 plates,
