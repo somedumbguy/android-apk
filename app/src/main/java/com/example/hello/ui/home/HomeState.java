@@ -65,10 +65,17 @@ public final class HomeState {
         public final double[] volumes;
         public final String[] dayLetters;
         public final String totalVolume;
+        /** "▲ 12%", or null when there's no earlier week to compare with. */
         public final String change;
+        /** "weeks in a row" or "week in a row". */
+        public final String streakUnit;
+        /** True while the stats are sample data; the view labels them. */
+        public final boolean demo;
 
         Stats(
                 String streak,
+                String streakUnit,
+                boolean demo,
                 String best,
                 int workoutsDone,
                 int weeklyGoal,
@@ -77,6 +84,8 @@ public final class HomeState {
                 String totalVolume,
                 String change) {
             this.streak = streak;
+            this.streakUnit = streakUnit;
+            this.demo = demo;
             this.best = best;
             this.workoutsDone = workoutsDone;
             this.weeklyGoal = weeklyGoal;

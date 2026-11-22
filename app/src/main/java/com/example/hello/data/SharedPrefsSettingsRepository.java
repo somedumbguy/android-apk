@@ -7,6 +7,8 @@ import com.example.hello.domain.progression.Intensity;
 /** Stores user preferences on the phone. */
 public final class SharedPrefsSettingsRepository implements SettingsRepository {
     private static final String INTENSITY = "intensity";
+    private static final String WEEKLY_GOAL = "weeklyGoal";
+    static final int DEFAULT_WEEKLY_GOAL = 3;
     private final SharedPreferences prefs;
 
     public SharedPrefsSettingsRepository(SharedPreferences prefs) {
@@ -25,5 +27,10 @@ public final class SharedPrefsSettingsRepository implements SettingsRepository {
     @Override
     public void setIntensity(Intensity intensity) {
         prefs.edit().putString(INTENSITY, intensity.name()).apply();
+    }
+
+    @Override
+    public int weeklyGoal() {
+        return prefs.getInt(WEEKLY_GOAL, DEFAULT_WEEKLY_GOAL);
     }
 }

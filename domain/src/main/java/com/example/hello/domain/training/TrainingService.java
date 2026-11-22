@@ -3,9 +3,11 @@ package com.example.hello.domain.training;
 import com.example.hello.domain.forecast.Forecast;
 import com.example.hello.domain.forecast.Forecaster;
 import com.example.hello.domain.history.ActiveWorkoutStore;
+import com.example.hello.domain.history.ActivityCalculator;
 import com.example.hello.domain.history.ActivitySummary;
 import com.example.hello.domain.history.SettingsRepository;
 import com.example.hello.domain.history.WorkoutRepository;
+import com.example.hello.domain.model.CompletedWorkout;
 import com.example.hello.domain.model.Exercise;
 import com.example.hello.domain.model.PersonalRecord;
 import com.example.hello.domain.model.SetRecord;
@@ -92,7 +94,9 @@ public final class TrainingService {
     }
 
     public ActivitySummary activity() {
-        return workouts.activity(LocalDate.now(clock));
+        LocalDate today = LocalDate.now(clock);
+        return ActivityCalculator.summarize(
+                workouts.history(today), today, settings.weeklyGoal(), !workouts.hasLoggedWorkouts());
     }
 
     // ---- Workouts ----
@@ -185,7 +189,9 @@ public final class TrainingService {
             }
         }
 
-        if (sets > 0) workouts.addVolume(LocalDate.now(clock), volume);
+        if (sets > 0) {
+            workouts.recordWorkout(new CompletedWorkout(LocalDate.now(clock), session.plan.name, volume, sets));
+        }
         activeWorkout.clear();
         return new WorkoutSummary(volume, sets, records);
     }

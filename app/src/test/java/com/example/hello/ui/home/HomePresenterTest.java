@@ -26,8 +26,7 @@ public class HomePresenterTest {
                 .withCleanSession(Catalog.BENCH, 185)
                 .withPr(Catalog.BENCH, 185, TestClocks.daysAgo(14))
                 .withPr(Catalog.SQUAT, 315, TestClocks.daysAgo(9))
-                .withPr(Catalog.DEADLIFT, 405, TestClocks.daysAgo(2))
-                .withStreak(12, 21);
+                .withPr(Catalog.DEADLIFT, 405, TestClocks.daysAgo(2));
         presenter = new HomePresenter(t.service, t.clock, Locale.US);
     }
 
@@ -85,12 +84,27 @@ public class HomePresenterTest {
     }
 
     @Test
-    public void statsComeFromActivity() {
+    public void statsComeFromTheWorkoutHistory() {
+        // Today is Saturday 21 Nov; this week started Monday 16 Nov.
+        for (int day : new int[] {9, 11, 13}) t.workouts.withWorkout(java.time.LocalDate.of(2026, 11, day), 900);
+        for (int day : new int[] {16, 18, 20}) t.workouts.withWorkout(java.time.LocalDate.of(2026, 11, day), 1000);
+
         HomeState.Stats s = presenter.present(USER).stats;
-        assertEquals("12", s.streak);
-        assertEquals("BEST · 21", s.best);
-        assertEquals(7, s.volumes.length);
-        assertEquals("0", s.totalVolume);
+        assertEquals("2", s.streak);
+        assertEquals("weeks in a row", s.streakUnit);
+        assertEquals("BEST · 2", s.best);
+        assertEquals(3, s.workoutsDone);
+        assertEquals("3,000", s.totalVolume);
+        assertEquals("▲ 11%", s.change);
+        assertFalse(s.demo);
+    }
+
+    @Test
+    public void withNoHistoryThereIsNothingToCompareAndItsLabelledDemo() {
+        HomeState.Stats s = presenter.present(USER).stats;
+        assertEquals("0", s.streak);
+        assertEquals(null, s.change);
+        assertTrue(s.demo);
     }
 
     @Test
