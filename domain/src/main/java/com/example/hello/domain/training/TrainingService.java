@@ -39,6 +39,9 @@ public final class TrainingService {
     /** Ignore rounding noise when comparing estimated maxes. */
     private static final double E1RM_EPSILON = 0.01;
 
+    public static final int MIN_WEEKLY_GOAL = 2;
+    public static final int MAX_WEEKLY_GOAL = 6;
+
     private final WorkoutRepository workouts;
     private final SettingsRepository settings;
     private final ActiveWorkoutStore activeWorkout;
@@ -72,6 +75,15 @@ public final class TrainingService {
 
     public void setIntensity(Intensity intensity) {
         settings.setIntensity(intensity);
+    }
+
+    /** Workout days per week to aim for; clamped to {@link #MIN_WEEKLY_GOAL}–{@link #MAX_WEEKLY_GOAL}. */
+    public int weeklyGoal() {
+        return settings.weeklyGoal();
+    }
+
+    public void setWeeklyGoal(int days) {
+        settings.setWeeklyGoal(Math.max(MIN_WEEKLY_GOAL, Math.min(MAX_WEEKLY_GOAL, days)));
     }
 
     public Program program() {

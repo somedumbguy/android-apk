@@ -44,10 +44,17 @@ public final class Catalog {
             new WorkoutPlan("Workout B", Arrays.asList(SQUAT, OVERHEAD_PRESS, DEADLIFT));
 
     /** Classic 5×5-style full-body alternation: squat every session, A then B. */
-    public static final Program FULL_BODY_AB =
-            new Program("full_body_ab", "Full body A/B", Arrays.asList(WORKOUT_A, WORKOUT_B));
+    public static final Program FULL_BODY_AB = new Program(
+            "full_body_ab",
+            "Full body A/B",
+            "Squat every session, alternating bench and row with overhead press and deadlift. Best for building strength fast.",
+            Arrays.asList(WORKOUT_A, WORKOUT_B));
 
-    public static final Program PUSH = new Program("push", "Push day", Arrays.asList(PUSH_DAY));
+    public static final Program PUSH = new Program(
+            "push",
+            "Push day",
+            "Chest, shoulders and triceps: bench, overhead press and accessories.",
+            Arrays.asList(PUSH_DAY));
 
     public static final Program DEFAULT_PROGRAM = FULL_BODY_AB;
     public static final List<Program> PROGRAMS = Arrays.asList(FULL_BODY_AB, PUSH);

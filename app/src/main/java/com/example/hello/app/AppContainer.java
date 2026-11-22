@@ -17,6 +17,7 @@ import com.example.hello.domain.progression.ProgressionEngine;
 import com.example.hello.domain.training.TrainingService;
 import com.example.hello.ui.home.HomePresenter;
 import com.example.hello.ui.intensity.IntensityPresenter;
+import com.example.hello.ui.plan.PlanPresenter;
 import com.example.hello.ui.workout.QuickLog;
 import com.example.hello.ui.workout.RestController;
 import com.example.hello.ui.workout.RestNotifications;
@@ -66,6 +67,10 @@ public final class AppContainer {
 
     public HomePresenter homePresenter() {
         return new HomePresenter(training, clock, Locale.getDefault());
+    }
+
+    public PlanPresenter planPresenter() {
+        return new PlanPresenter(training);
     }
 
     public IntensityPresenter intensityPresenter() {

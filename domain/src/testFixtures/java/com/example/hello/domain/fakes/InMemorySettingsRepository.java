@@ -38,4 +38,9 @@ public final class InMemorySettingsRepository implements SettingsRepository {
     public void setProgramId(String id) {
         programId = id;
     }
+
+    @Override
+    public void setWeeklyGoal(int days) {
+        weeklyGoal = days;
+    }
 }

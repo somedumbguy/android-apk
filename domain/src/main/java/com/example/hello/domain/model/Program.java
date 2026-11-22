@@ -8,12 +8,14 @@ import java.util.Optional;
 public final class Program {
     public final String id;
     public final String name;
+    public final String description;
     public final List<WorkoutPlan> rotation;
 
-    public Program(String id, String name, List<WorkoutPlan> rotation) {
+    public Program(String id, String name, String description, List<WorkoutPlan> rotation) {
         if (rotation.isEmpty()) throw new IllegalArgumentException("a program needs at least one workout");
         this.id = id;
         this.name = name;
+        this.description = description;
         this.rotation = Collections.unmodifiableList(rotation);
     }
 

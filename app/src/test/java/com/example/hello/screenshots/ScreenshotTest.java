@@ -16,6 +16,7 @@ import com.example.hello.MainActivity;
 import com.example.hello.app.AppContainer;
 import com.example.hello.ui.common.Palette;
 import com.example.hello.ui.intensity.IntensitySheet;
+import com.example.hello.ui.plan.PlanSheet;
 import com.example.hello.ui.workout.WorkoutActivity;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -81,6 +82,15 @@ public class ScreenshotTest {
         settle();
         Dialog d = ShadowDialog.getLatestDialog();
         save(d.getWindow().getDecorView(), "03-intensity-sheet");
+    }
+
+    @Test
+    public void planSheet() throws IOException {
+        signIn();
+        Activity a = Robolectric.buildActivity(MainActivity.class).setup().get();
+        PlanSheet.show(a, AppContainer.from(a).planPresenter(), () -> {});
+        settle();
+        save(ShadowDialog.getLatestDialog().getWindow().getDecorView(), "05-plan-sheet");
     }
 
     @Test

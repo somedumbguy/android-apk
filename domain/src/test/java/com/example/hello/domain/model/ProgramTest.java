@@ -33,7 +33,7 @@ public class ProgramTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void needsAtLeastOneWorkout() {
-        new Program("x", "Empty", Collections.emptyList());
+        new Program("x", "Empty", "", Collections.emptyList());
     }
 
     @Test

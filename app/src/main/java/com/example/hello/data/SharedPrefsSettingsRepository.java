@@ -45,4 +45,9 @@ public final class SharedPrefsSettingsRepository implements SettingsRepository {
     public void setProgramId(String id) {
         prefs.edit().putString(PROGRAM, id).apply();
     }
+
+    @Override
+    public void setWeeklyGoal(int days) {
+        prefs.edit().putInt(WEEKLY_GOAL, days).apply();
+    }
 }

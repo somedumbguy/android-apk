@@ -95,7 +95,10 @@ public class SharedPrefsWorkoutRepositoryTest {
 
     @Test
     public void weeklyGoalDefaultsToThree() {
-        assertEquals(3, new SharedPrefsSettingsRepository(new InMemorySharedPreferences()).weeklyGoal());
+        SharedPrefsSettingsRepository settings = new SharedPrefsSettingsRepository(new InMemorySharedPreferences());
+        assertEquals(3, settings.weeklyGoal());
+        settings.setWeeklyGoal(5);
+        assertEquals(5, settings.weeklyGoal());
     }
 
     @Test
