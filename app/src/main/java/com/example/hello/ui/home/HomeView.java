@@ -32,6 +32,8 @@ public final class HomeView {
         void onIntensityTapped();
 
         void onPlanTapped();
+
+        void onVoiceTapped();
     }
 
     private static final int SIDE_DP = 20;
@@ -60,7 +62,7 @@ public final class HomeView {
         content.addView(target(c, state.target, listener), Ui.matchWidth(c, 0, 20));
         content.addView(stats(c, state.stats, ring, listener), Ui.matchWidth(c, 0, 12));
         content.addView(weekly(c, state.stats, bars), Ui.matchWidth(c, 0, 12));
-        content.addView(voice(c), Ui.matchWidth(c, 0, 12));
+        content.addView(voice(c, listener), Ui.matchWidth(c, 0, 12));
 
         root.addView(Cards.bottomScrim(c, 140));
         Button fab = Ui.primaryButton(c, "+   Log a set");
@@ -255,12 +257,12 @@ public final class HomeView {
         return card;
     }
 
-    private static View voice(Context c) {
+    private static View voice(Context c, Listener listener) {
         LinearLayout card = Ui.row(c);
         int pad = Ui.dp(c, 18);
         card.setPadding(pad, pad, pad, pad);
         card.setBackground(Ui.ripple(Cards.cardBackground(c), 0x22FFFFFF));
-        card.setOnClickListener(Ui.comingSoon(c, "Voice logging"));
+        card.setOnClickListener(v -> listener.onVoiceTapped());
 
         card.addView(new MicView(c), new LinearLayout.LayoutParams(Ui.dp(c, 52), Ui.dp(c, 52)));
         LinearLayout col = Ui.column(c);
@@ -271,7 +273,7 @@ public final class HomeView {
                 14,
                 Palette.MUTED,
                 Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)));
-        TextView ai = Ui.text(c, "AI logs it for you", 12, Palette.LIME, Palette.MEDIUM);
+        TextView ai = Ui.text(c, "Logs it for you, no typing", 12, Palette.LIME, Palette.MEDIUM);
         ai.setPadding(0, Ui.dp(c, 4), 0, 0);
         col.addView(ai);
         LinearLayout.LayoutParams colLp = Ui.fill();

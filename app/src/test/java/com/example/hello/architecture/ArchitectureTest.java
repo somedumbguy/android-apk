@@ -87,6 +87,8 @@ public class ArchitectureTest {
                 .haveSimpleName("RestController")
                 .or()
                 .haveSimpleName("QuickLog")
+                .or()
+                .haveSimpleName("VoiceLogger")
                 .should()
                 .dependOnClassesThat()
                 .resideInAnyPackage("android..", "androidx..")
