@@ -151,14 +151,17 @@ public class TrainingServiceTest {
         WorkoutSession s = t.service.startSession(benchAndDb);
         completeAll(s.entries.get(0));
         t.service.complete(s);
-        assertEquals(190 * 15, t.workouts.volumeOn(LocalDate.of(2026, 11, 21)), 0);
         assertEquals(190 * 15, t.service.activity().last7DaysVolume()[6], 0);
+        assertEquals(1, t.service.activity().workoutsThisWeek);
+        assertEquals(
+                LocalDate.of(2026, 11, 21),
+                t.workouts.history(LocalDate.of(2026, 11, 21)).get(0).day);
     }
 
     @Test
     public void finishingWithNothingDoneSavesNothing() {
         WorkoutSummary summary = t.service.complete(t.service.startSession(benchAndDb));
         assertEquals(0, summary.sets);
-        assertEquals(0, t.workouts.volumeOn(LocalDate.of(2026, 11, 21)), 0);
+        assertFalse(t.workouts.hasLoggedWorkouts());
     }
 }

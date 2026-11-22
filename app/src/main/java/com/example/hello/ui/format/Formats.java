@@ -72,4 +72,9 @@ public final class Formats {
     public static String minutesSeconds(long totalSeconds) {
         return String.format(Locale.US, "%d:%02d", totalSeconds / 60, totalSeconds % 60);
     }
+
+    /** "▲ 12%" or "▼ 5%". */
+    public static String percentChange(int pct) {
+        return (pct >= 0 ? "▲ " : "▼ ") + Math.abs(pct) + "%";
+    }
 }

@@ -1,8 +1,8 @@
 package com.example.hello.data;
 
 import android.content.SharedPreferences;
-import com.example.hello.domain.history.ActivitySummary;
 import com.example.hello.domain.history.WorkoutRepository;
+import com.example.hello.domain.model.CompletedWorkout;
 import com.example.hello.domain.model.Exercise;
 import com.example.hello.domain.model.PersonalRecord;
 import com.example.hello.domain.model.SetRecord;
@@ -70,39 +70,27 @@ public final class SharedPrefsWorkoutRepository implements WorkoutRepository {
     }
 
     @Override
-    public void addVolume(LocalDate day, double volume) {
+    public void recordWorkout(CompletedWorkout workout) {
         prefs.edit()
-                .putFloat(Keys.volume(day), (float) (volumeOn(day) + volume))
+                .putString(Keys.LOG, WorkoutLogCodec.append(prefs.getString(Keys.LOG, null), workout))
                 .apply();
     }
 
     @Override
-    public ActivitySummary activity(LocalDate today) {
-        double[] last7 = new double[7];
-        for (int i = 0; i < 6; i++) {
-            double real = volumeOn(today.minusDays(6 - i));
-            last7[i] = real > 0 ? real : seed.previousSixDays[i];
-        }
-        last7[6] = volumeOn(today);
-        int todayCount = last7[6] > 0 ? 1 : 0;
-        int streak = seed.streakDays + todayCount;
-        return new ActivitySummary(
-                streak,
-                Math.max(seed.bestStreak, streak),
-                seed.workoutsThisWeek + todayCount,
-                seed.weeklyGoal,
-                last7,
-                seed.volumeChangePct);
+    public List<CompletedWorkout> history(LocalDate today) {
+        return hasLoggedWorkouts() ? WorkoutLogCodec.decode(prefs.getString(Keys.LOG, null)) : seed.demoHistory(today);
     }
 
-    private double volumeOn(LocalDate day) {
-        return prefs.getFloat(Keys.volume(day), 0);
+    @Override
+    public boolean hasLoggedWorkouts() {
+        return prefs.contains(Keys.LOG);
     }
 
     /** Storage keys, keyed by stable exercise id. */
     private static final class Keys {
         static final String PR_WEIGHT = "pr:";
         static final String PR_TIME = "prTime:";
+        static final String LOG = "log";
 
         static String sets(Exercise e) {
             return "sets:" + e.id;
@@ -118,10 +106,6 @@ public final class SharedPrefsWorkoutRepository implements WorkoutRepository {
 
         static String prTime(Exercise e) {
             return PR_TIME + e.id;
-        }
-
-        static String volume(LocalDate d) {
-            return "vol:" + d.toEpochDay();
         }
     }
 }

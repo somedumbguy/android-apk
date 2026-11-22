@@ -7,4 +7,7 @@ public interface SettingsRepository {
     Intensity intensity();
 
     void setIntensity(Intensity intensity);
+
+    /** Workout days per week to aim for. */
+    int weeklyGoal();
 }

@@ -87,13 +87,15 @@ public final class HomePresenter {
     private HomeState.Stats stats(LocalDate today) {
         ActivitySummary a = training.activity();
         return new HomeState.Stats(
-                String.valueOf(a.streakDays),
-                "BEST · " + a.bestStreak,
+                String.valueOf(a.streakWeeks),
+                a.streakWeeks == 1 ? "week in a row" : "weeks in a row",
+                a.demo,
+                "BEST · " + a.bestStreakWeeks,
                 a.workoutsThisWeek,
                 a.weeklyGoal,
                 a.last7DaysVolume(),
                 Formats.last7DayLetters(today, locale),
                 Formats.thousands(a.totalVolume()),
-                (a.volumeChangePct >= 0 ? "▲ " : "▼ ") + Math.abs(a.volumeChangePct) + "%");
+                a.volumeChangePct.isPresent() ? Formats.percentChange(a.volumeChangePct.getAsInt()) : null);
     }
 }

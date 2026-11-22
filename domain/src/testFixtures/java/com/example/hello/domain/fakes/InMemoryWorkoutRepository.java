@@ -1,7 +1,7 @@
 package com.example.hello.domain.fakes;
 
-import com.example.hello.domain.history.ActivitySummary;
 import com.example.hello.domain.history.WorkoutRepository;
+import com.example.hello.domain.model.CompletedWorkout;
 import com.example.hello.domain.model.Exercise;
 import com.example.hello.domain.model.PersonalRecord;
 import com.example.hello.domain.model.SetRecord;
@@ -19,10 +19,7 @@ public final class InMemoryWorkoutRepository implements WorkoutRepository {
     private final Map<String, List<SetRecord>> sessions = new HashMap<>();
     private final Map<String, Integer> fails = new HashMap<>();
     private final Map<String, PersonalRecord> records = new HashMap<>();
-    private final Map<LocalDate, Double> volumes = new HashMap<>();
-    private int streak;
-    private int bestStreak;
-    private int weeklyGoal = 4;
+    private final List<CompletedWorkout> history = new ArrayList<>();
 
     // ---- Test setup helpers ----
 
@@ -49,15 +46,10 @@ public final class InMemoryWorkoutRepository implements WorkoutRepository {
         return this;
     }
 
-    public InMemoryWorkoutRepository withStreak(int streak, int best) {
-        this.streak = streak;
-        this.bestStreak = best;
+    /** A logged workout on {@code day}. */
+    public InMemoryWorkoutRepository withWorkout(LocalDate day, double volume) {
+        history.add(new CompletedWorkout(day, "Test", volume, 3));
         return this;
-    }
-
-    public double volumeOn(LocalDate day) {
-        Double v = volumes.get(day);
-        return v == null ? 0 : v;
     }
 
     // ---- WorkoutRepository ----
@@ -91,18 +83,17 @@ public final class InMemoryWorkoutRepository implements WorkoutRepository {
     }
 
     @Override
-    public void addVolume(LocalDate day, double volume) {
-        volumes.put(day, volumeOn(day) + volume);
+    public void recordWorkout(CompletedWorkout workout) {
+        history.add(workout);
     }
 
     @Override
-    public ActivitySummary activity(LocalDate today) {
-        double[] last7 = new double[7];
-        int workouts = 0;
-        for (int i = 0; i < 7; i++) {
-            last7[i] = volumeOn(today.minusDays(6 - i));
-            if (last7[i] > 0) workouts++;
-        }
-        return new ActivitySummary(streak, bestStreak, workouts, weeklyGoal, last7, 0);
+    public List<CompletedWorkout> history(LocalDate today) {
+        return new ArrayList<>(history);
+    }
+
+    @Override
+    public boolean hasLoggedWorkouts() {
+        return !history.isEmpty();
     }
 }

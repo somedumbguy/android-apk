@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.example.hello.domain.catalog.Catalog;
 import com.example.hello.domain.fakes.TestClocks;
-import com.example.hello.domain.history.ActivitySummary;
+import com.example.hello.domain.model.CompletedWorkout;
 import com.example.hello.domain.model.PersonalRecord;
 import com.example.hello.domain.model.SetRecord;
 import com.example.hello.domain.progression.Intensity;
@@ -56,14 +56,38 @@ public class SharedPrefsWorkoutRepositoryTest {
     }
 
     @Test
-    public void todaysVolumeAccumulatesAndCountsTowardTheWeek() {
-        ActivitySummary before = repo.activity(TODAY);
-        repo.addVolume(TODAY, 1000);
-        repo.addVolume(TODAY, 500);
-        ActivitySummary after = repo.activity(TODAY);
-        assertEquals(1500, after.last7DaysVolume()[6], 0);
-        assertEquals(before.workoutsThisWeek + 1, after.workoutsThisWeek);
-        assertEquals(before.streakDays + 1, after.streakDays);
+    public void demoHistoryIsShownUntilTheFirstRealWorkout() {
+        assertFalse(repo.hasLoggedWorkouts());
+        assertFalse(repo.history(TODAY).isEmpty());
+        for (CompletedWorkout w : repo.history(TODAY)) assertTrue(w.day.isBefore(TODAY));
+
+        repo.recordWorkout(new CompletedWorkout(TODAY, "Push Day", 2850, 3));
+        assertTrue(repo.hasLoggedWorkouts());
+        assertEquals(1, repo.history(TODAY).size());
+        assertEquals(2850, repo.history(TODAY).get(0).volume, 0);
+    }
+
+    @Test
+    public void demoHistoryIsTheSameEveryTimeForAGivenDay() {
+        List<CompletedWorkout> a = repo.history(TODAY);
+        List<CompletedWorkout> b = repo.history(TODAY);
+        assertEquals(a.size(), b.size());
+        for (int i = 0; i < a.size(); i++) assertEquals(a.get(i).volume, b.get(i).volume, 0);
+    }
+
+    @Test
+    public void workoutsAccumulateInOrder() {
+        repo.recordWorkout(new CompletedWorkout(TODAY.minusDays(2), "Push Day", 1000, 3));
+        repo.recordWorkout(new CompletedWorkout(TODAY, "Push Day", 2000, 4));
+        List<CompletedWorkout> h = repo.history(TODAY);
+        assertEquals(2, h.size());
+        assertEquals(TODAY.minusDays(2), h.get(0).day);
+        assertEquals(4, h.get(1).sets);
+    }
+
+    @Test
+    public void weeklyGoalDefaultsToThree() {
+        assertEquals(3, new SharedPrefsSettingsRepository(new InMemorySharedPreferences()).weeklyGoal());
     }
 
     @Test

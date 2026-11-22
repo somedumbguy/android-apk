@@ -1,8 +1,11 @@
 package com.example.hello.data;
 
 import com.example.hello.domain.catalog.Catalog;
+import com.example.hello.domain.model.CompletedWorkout;
 import com.example.hello.domain.model.Exercise;
 import com.example.hello.domain.model.SetRecord;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,27 +13,19 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Starting history so the app has something to show before anything is logged. Once an
- * exercise is logged, real data replaces its seed. Streak and earlier days are still placeholders.
+ * Sample data so the app has something to show before anything is logged. Each exercise's
+ * seed is replaced once it's logged; the demo workout history is replaced by the first real
+ * workout, and the home screen labels it as demo data until then.
  */
 public final class SeedData {
     final Map<String, List<SetRecord>> sessions = new HashMap<>();
     final Map<String, Double> prWeights = new HashMap<>();
     final Map<String, Integer> prDaysAgo = new HashMap<>();
-    int streakDays;
-    int bestStreak;
-    int workoutsThisWeek;
-    int weeklyGoal;
-    /** Volume for the 6 days before today, oldest first. */
-    double[] previousSixDays = new double[6];
-
-    int volumeChangePct;
+    private int demoWeeks;
 
     /** No history at all. */
     public static SeedData empty() {
-        SeedData s = new SeedData();
-        s.weeklyGoal = 4;
-        return s;
+        return new SeedData();
     }
 
     /** The demo history used until real workouts are logged. */
@@ -48,13 +43,23 @@ public final class SeedData {
                         Catalog.PUSHDOWN,
                         Arrays.asList(new SetRecord(60, 15, 10), new SetRecord(60, 15, 10), new SetRecord(60, 15, 10)))
                 .pr(Catalog.PUSHDOWN, 70, 24);
-        s.streakDays = 12;
-        s.bestStreak = 21;
-        s.workoutsThisWeek = 3;
-        s.weeklyGoal = 4;
-        s.previousSixDays = new double[] {5400, 0, 6800, 0, 6220, 0};
-        s.volumeChangePct = 12;
+        s.demoWeeks = 8;
         return s;
+    }
+
+    /**
+     * Monday, Wednesday and Friday workouts for the past few weeks, before today. Volumes
+     * vary by date but are deterministic, so the same day always looks the same.
+     */
+    List<CompletedWorkout> demoHistory(LocalDate today) {
+        List<CompletedWorkout> out = new ArrayList<>();
+        for (LocalDate d = today.minusWeeks(demoWeeks); d.isBefore(today); d = d.plusDays(1)) {
+            DayOfWeek dow = d.getDayOfWeek();
+            if (dow != DayOfWeek.MONDAY && dow != DayOfWeek.WEDNESDAY && dow != DayOfWeek.FRIDAY) continue;
+            double volume = 5200 + (d.toEpochDay() * 37) % 1700;
+            out.add(new CompletedWorkout(d, Catalog.PUSH_DAY.name, volume, 12));
+        }
+        return out;
     }
 
     private SeedData session(Exercise e, List<SetRecord> sets) {

@@ -187,11 +187,11 @@ public final class HomeView {
         row.setOrientation(LinearLayout.HORIZONTAL);
 
         LinearLayout streak = Cards.card(c);
-        streak.addView(Cards.label(c, "Streak"));
+        streak.addView(labelWithDemo(c, "Streak", s.demo));
         LinearLayout num = Cards.numberWithUnit(c, s.streak, 44, "🔥", 26, Palette.TEXT, Palette.TEXT);
         num.setPadding(0, Ui.dp(c, 6), 0, 0);
         streak.addView(num);
-        streak.addView(Ui.text(c, "days in a row", 13, Palette.MUTED));
+        streak.addView(Ui.text(c, s.streakUnit, 13, Palette.MUTED));
         streak.addView(Ui.chip(c, s.best, Palette.LIME, Palette.LIME_TINT), Ui.wrap(c, 16));
 
         LinearLayout goal = Cards.card(c);
@@ -210,16 +210,29 @@ public final class HomeView {
         return row;
     }
 
+    /** A card label, with a "DEMO" tag while the stats are sample data. */
+    private static View labelWithDemo(Context c, String label, boolean demo) {
+        LinearLayout row = Ui.row(c);
+        row.addView(Cards.label(c, label));
+        if (demo) {
+            TextView tag = Ui.chip(c, "DEMO", Palette.MUTED, Palette.SURFACE_2);
+            LinearLayout.LayoutParams lp = Ui.wrap(c, 0);
+            lp.leftMargin = Ui.dp(c, 8);
+            row.addView(tag, lp);
+        }
+        return row;
+    }
+
     private static View weekly(Context c, HomeState.Stats s, BarChartView bars) {
         LinearLayout card = Cards.card(c);
         LinearLayout top = new LinearLayout(c);
         top.setOrientation(LinearLayout.HORIZONTAL);
         LinearLayout col = Ui.column(c);
-        col.addView(Cards.label(c, "Last 7 days"));
+        col.addView(labelWithDemo(c, "Last 7 days", s.demo));
         col.addView(Cards.numberWithUnit(c, s.totalVolume, 32, "lb", 16, Palette.TEXT, Palette.MUTED));
         col.addView(Ui.text(c, "Total volume lifted", 13, Palette.MUTED));
         top.addView(col, Ui.fill());
-        top.addView(Ui.chip(c, s.change, Palette.LIME, Palette.LIME_TINT));
+        if (s.change != null) top.addView(Ui.chip(c, s.change, Palette.LIME, Palette.LIME_TINT));
         card.addView(top);
         card.addView(bars, Ui.matchWidth(c, 150, 20));
         return card;

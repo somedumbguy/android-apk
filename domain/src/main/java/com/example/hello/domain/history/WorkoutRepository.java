@@ -1,5 +1,6 @@
 package com.example.hello.domain.history;
 
+import com.example.hello.domain.model.CompletedWorkout;
 import com.example.hello.domain.model.Exercise;
 import com.example.hello.domain.model.PersonalRecord;
 import com.example.hello.domain.model.SetRecord;
@@ -22,7 +23,14 @@ public interface WorkoutRepository {
 
     void savePersonalRecord(PersonalRecord record);
 
-    void addVolume(LocalDate day, double volume);
+    void recordWorkout(CompletedWorkout workout);
 
-    ActivitySummary activity(LocalDate today);
+    /**
+     * Finished workouts, oldest first. Until a real workout is logged this may be sample data
+     * (see {@link #hasLoggedWorkouts()}), generated relative to {@code today}.
+     */
+    List<CompletedWorkout> history(LocalDate today);
+
+    /** False while {@link #history} is sample data. */
+    boolean hasLoggedWorkouts();
 }

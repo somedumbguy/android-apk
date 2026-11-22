@@ -11,8 +11,10 @@ items here in the same pull request that delivers them.
       Done / +30s / Skip buttons (lock-screen logging) and an alarm when rest is over (v0.8).
 - [ ] **Real package name.** `com.example.hello` can't be published on Google Play and can
       never change after the first upload. *Waiting on a decision: what should it be?*
-- [ ] **Real workout history.** Replace demo streak, weekly goal and earlier days' volume
-      with a Room (SQLite) database; enables history, charts and export.
+- [x] **Real workout history.** Every finished workout is logged; streak (weeks in a row
+      hitting the weekly goal), the weekly ring and volume are calculated from it. Demo data
+      shows only until the first real workout and is labelled DEMO (v0.9). A simple log is
+      enough for these summaries; move to Room when storing every set for charts and export.
 
 ## 2. See what's built
 
@@ -34,6 +36,8 @@ items here in the same pull request that delivers them.
 - [ ] **Your gym's equipment:** kg or lb, bar weight, available plates and microplates.
 - [ ] **Starting weights from one test set.**
 - [ ] **Health Connect export.**
+- [ ] **Set the weekly goal** in the app (currently 3).
+- [ ] **Full set-by-set history** in Room, for charts, history screens and export.
 - [ ] **Haptic feedback** when checking off a set.
 - [ ] **Accessibility:** screen-reader labels for custom views, large-font layouts,
       contrast checks.
