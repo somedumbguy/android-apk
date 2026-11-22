@@ -30,6 +30,8 @@ public final class HomeView {
         void onStartWorkout();
 
         void onIntensityTapped();
+
+        void onPlanTapped();
     }
 
     private static final int SIDE_DP = 20;
@@ -56,7 +58,7 @@ public final class HomeView {
                 Ui.matchWidth(c, 0, 28));
         content.addView(records(c, state));
         content.addView(target(c, state.target, listener), Ui.matchWidth(c, 0, 20));
-        content.addView(stats(c, state.stats, ring), Ui.matchWidth(c, 0, 12));
+        content.addView(stats(c, state.stats, ring, listener), Ui.matchWidth(c, 0, 12));
         content.addView(weekly(c, state.stats, bars), Ui.matchWidth(c, 0, 12));
         content.addView(voice(c), Ui.matchWidth(c, 0, 12));
 
@@ -167,7 +169,8 @@ public final class HomeView {
         top.addView(mode);
         card.addView(top);
 
-        TextView context = Ui.text(c, t.context, 15, 0xE6FFFFFF, Palette.MEDIUM);
+        TextView context = Ui.text(c, t.context + "  ▾", 15, 0xE6FFFFFF, Palette.MEDIUM);
+        context.setOnClickListener(v -> listener.onPlanTapped());
         context.setPadding(0, Ui.dp(c, 20), 0, 0);
         card.addView(context);
         card.addView(Cards.numberWithUnit(c, t.weight, 76, "lb", 22, Color.WHITE, 0xCCFFFFFF));
@@ -189,7 +192,7 @@ public final class HomeView {
         return card;
     }
 
-    private static View stats(Context c, HomeState.Stats s, RingView ring) {
+    private static View stats(Context c, HomeState.Stats s, RingView ring, Listener listener) {
         LinearLayout row = new LinearLayout(c);
         row.setOrientation(LinearLayout.HORIZONTAL);
 
@@ -202,6 +205,8 @@ public final class HomeView {
         streak.addView(Ui.chip(c, s.best, Palette.LIME, Palette.LIME_TINT), Ui.wrap(c, 16));
 
         LinearLayout goal = Cards.card(c);
+        goal.setBackground(Ui.ripple(Cards.cardBackground(c), 0x22FFFFFF));
+        goal.setOnClickListener(v -> listener.onPlanTapped());
         goal.addView(Cards.label(c, "Weekly goal"));
         LinearLayout.LayoutParams ringLp = new LinearLayout.LayoutParams(Ui.dp(c, 108), Ui.dp(c, 108));
         ringLp.gravity = Gravity.CENTER_HORIZONTAL;

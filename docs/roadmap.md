@@ -35,14 +35,15 @@ items here in the same pull request that delivers them.
 
 - [x] **Programs with A/B alternation:** Full body A/B (default) and Push day; the next
       workout follows from the last one logged (v0.12).
-- [ ] **Program picker and a 3-question onboarding** that picks a program for you.
+- [x] **Program picker:** "Your plan" sheet to choose a program and weekly goal (v0.13).
+- [ ] **3-question onboarding** that picks a program and goal for you.
 - [ ] **Exercise library** to build custom workouts.
 - [x] **Better PRs:** estimated one-rep max (Epley) on the record cards, and more reps at
       the same weight now counts as a PR (v0.11).
 - [ ] **Your gym's equipment:** kg or lb, bar weight, available plates and microplates.
 - [ ] **Starting weights from one test set.**
 - [ ] **Health Connect export.**
-- [ ] **Set the weekly goal** in the app (currently 3).
+- [x] **Set the weekly goal** in the app, 2–6 days (v0.13).
 - [ ] **Full set-by-set history** in Room, for charts, history screens and export.
 - [x] **Haptic feedback** when checking off a set (v0.11).
 - [ ] **Accessibility:** screen-reader labels for custom views, large-font layouts,

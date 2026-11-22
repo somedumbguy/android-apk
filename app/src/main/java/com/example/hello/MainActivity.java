@@ -12,6 +12,7 @@ import com.example.hello.ui.common.Screens;
 import com.example.hello.ui.common.Ui;
 import com.example.hello.ui.home.HomeView;
 import com.example.hello.ui.intensity.IntensitySheet;
+import com.example.hello.ui.plan.PlanSheet;
 import com.example.hello.ui.signin.SignInView;
 import com.example.hello.ui.workout.WorkoutActivity;
 
@@ -65,6 +66,11 @@ public class MainActivity extends ComponentActivity implements HomeView.Listener
     @Override
     public void onStartWorkout() {
         startActivity(new Intent(this, WorkoutActivity.class));
+    }
+
+    @Override
+    public void onPlanTapped() {
+        PlanSheet.show(this, container.planPresenter(), this::render);
     }
 
     @Override

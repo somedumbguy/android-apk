@@ -11,6 +11,8 @@ public interface SettingsRepository {
     /** Workout days per week to aim for. */
     int weeklyGoal();
 
+    void setWeeklyGoal(int days);
+
     /** The chosen program's id. */
     String programId();
 
