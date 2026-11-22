@@ -7,6 +7,7 @@ import com.example.hello.domain.progression.Intensity;
 public final class InMemorySettingsRepository implements SettingsRepository {
     private Intensity intensity = Intensity.BUILD;
     private int weeklyGoal = 3;
+    private String programId = "full_body_ab";
 
     public InMemorySettingsRepository withWeeklyGoal(int goal) {
         weeklyGoal = goal;
@@ -26,5 +27,15 @@ public final class InMemorySettingsRepository implements SettingsRepository {
     @Override
     public int weeklyGoal() {
         return weeklyGoal;
+    }
+
+    @Override
+    public String programId() {
+        return programId;
+    }
+
+    @Override
+    public void setProgramId(String id) {
+        programId = id;
     }
 }

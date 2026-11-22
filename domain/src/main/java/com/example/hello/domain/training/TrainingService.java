@@ -1,5 +1,6 @@
 package com.example.hello.domain.training;
 
+import com.example.hello.domain.catalog.Catalog;
 import com.example.hello.domain.forecast.Forecast;
 import com.example.hello.domain.forecast.Forecaster;
 import com.example.hello.domain.history.ActiveWorkoutStore;
@@ -10,6 +11,7 @@ import com.example.hello.domain.history.WorkoutRepository;
 import com.example.hello.domain.model.CompletedWorkout;
 import com.example.hello.domain.model.Exercise;
 import com.example.hello.domain.model.PersonalRecord;
+import com.example.hello.domain.model.Program;
 import com.example.hello.domain.model.SetRecord;
 import com.example.hello.domain.model.Strength;
 import com.example.hello.domain.model.Suggestion;
@@ -70,6 +72,24 @@ public final class TrainingService {
 
     public void setIntensity(Intensity intensity) {
         settings.setIntensity(intensity);
+    }
+
+    public Program program() {
+        return Catalog.programById(settings.programId()).orElse(Catalog.DEFAULT_PROGRAM);
+    }
+
+    public void setProgram(Program program) {
+        settings.setProgramId(program.id);
+    }
+
+    /** The next workout in the program's rotation, from the last one logged. */
+    public WorkoutPlan nextPlan() {
+        Optional<String> last = Optional.empty();
+        if (workouts.hasLoggedWorkouts()) {
+            List<CompletedWorkout> history = workouts.history(LocalDate.now(clock));
+            if (!history.isEmpty()) last = Optional.of(history.get(history.size() - 1).plan);
+        }
+        return program().next(last);
     }
 
     // ---- Prescriptions and records ----

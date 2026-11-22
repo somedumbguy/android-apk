@@ -2,6 +2,7 @@ package com.example.hello.domain.catalog;
 
 import com.example.hello.domain.model.Equipment;
 import com.example.hello.domain.model.Exercise;
+import com.example.hello.domain.model.Program;
 import com.example.hello.domain.model.WorkoutPlan;
 import java.util.Arrays;
 import java.util.List;
@@ -19,6 +20,8 @@ public final class Catalog {
             Exercise.builder("squat", "Squat").sessionsPerWeek(3).build();
     public static final Exercise DEADLIFT =
             Exercise.builder("deadlift", "Deadlift").sets(1).incrementScale(2).build();
+    public static final Exercise BARBELL_ROW =
+            Exercise.builder("barbell_row", "Barbell Row").build();
     public static final Exercise INCLINE_DB = Exercise.builder("incline_db_press", "Incline Dumbbell Press")
             .equipment(Equipment.DUMBBELL)
             .repRange(8, 12)
@@ -36,11 +39,25 @@ public final class Catalog {
     /** The big barbell lifts shown in personal records and forecasts. */
     public static final List<Exercise> MAIN_LIFTS = Arrays.asList(BENCH, SQUAT, DEADLIFT, OVERHEAD_PRESS);
 
-    /** The lift featured on the home screen's coach card. */
-    public static final Exercise FEATURED = BENCH;
+    public static final WorkoutPlan WORKOUT_A = new WorkoutPlan("Workout A", Arrays.asList(SQUAT, BENCH, BARBELL_ROW));
+    public static final WorkoutPlan WORKOUT_B =
+            new WorkoutPlan("Workout B", Arrays.asList(SQUAT, OVERHEAD_PRESS, DEADLIFT));
+
+    /** Classic 5×5-style full-body alternation: squat every session, A then B. */
+    public static final Program FULL_BODY_AB =
+            new Program("full_body_ab", "Full body A/B", Arrays.asList(WORKOUT_A, WORKOUT_B));
+
+    public static final Program PUSH = new Program("push", "Push day", Arrays.asList(PUSH_DAY));
+
+    public static final Program DEFAULT_PROGRAM = FULL_BODY_AB;
+    public static final List<Program> PROGRAMS = Arrays.asList(FULL_BODY_AB, PUSH);
 
     public static final List<Exercise> ALL =
-            Arrays.asList(BENCH, OVERHEAD_PRESS, SQUAT, DEADLIFT, INCLINE_DB, PUSHDOWN);
+            Arrays.asList(BENCH, OVERHEAD_PRESS, SQUAT, DEADLIFT, BARBELL_ROW, INCLINE_DB, PUSHDOWN);
+
+    public static Optional<Program> programById(String id) {
+        return PROGRAMS.stream().filter(p -> p.id.equals(id)).findFirst();
+    }
 
     /** Looks up an exercise by its stable id. */
     public static Optional<Exercise> byId(String id) {

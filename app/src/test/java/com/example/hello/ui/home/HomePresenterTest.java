@@ -27,6 +27,8 @@ public class HomePresenterTest {
                 .withPr(Catalog.BENCH, 185, TestClocks.daysAgo(14))
                 .withPr(Catalog.SQUAT, 315, TestClocks.daysAgo(9))
                 .withPr(Catalog.DEADLIFT, 405, TestClocks.daysAgo(2));
+        // The bench-focused expectations below use the single-workout Push day program.
+        t.service.setProgram(Catalog.PUSH);
         presenter = new HomePresenter(t.service, t.clock, Locale.US);
     }
 
@@ -123,5 +125,14 @@ public class HomePresenterTest {
         HomeState s = presenter.present(USER);
         assertEquals("EST. 1RM · 216 LB", s.records.get(2).e1rm);
         assertEquals(null, s.records.get(0).e1rm); // deadlift has no estimate in this test
+    }
+
+    @Test
+    public void targetFeaturesTheFirstLiftOfTheNextWorkout() {
+        t.service.setProgram(Catalog.FULL_BODY_AB);
+        t.workouts.withCleanSession(Catalog.SQUAT, 275);
+        HomeState.Target target = presenter.present(USER).target;
+        assertEquals("Today · Workout A · Squat", target.context);
+        assertEquals("280", target.weight); // squats go up 5 lb at Build
     }
 }

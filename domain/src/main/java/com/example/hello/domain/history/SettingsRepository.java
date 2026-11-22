@@ -10,4 +10,9 @@ public interface SettingsRepository {
 
     /** Workout days per week to aim for. */
     int weeklyGoal();
+
+    /** The chosen program's id. */
+    String programId();
+
+    void setProgramId(String id);
 }

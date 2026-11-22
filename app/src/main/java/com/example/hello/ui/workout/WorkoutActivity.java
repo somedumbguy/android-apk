@@ -29,7 +29,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
 import com.example.hello.app.AppContainer;
-import com.example.hello.domain.catalog.Catalog;
 import com.example.hello.domain.plates.PlateMath;
 import com.example.hello.domain.session.ExerciseEntry;
 import com.example.hello.domain.session.SetEntry;
@@ -111,7 +110,7 @@ public class WorkoutActivity extends ComponentActivity {
         super.onResume();
         // Reload every time: picks up where you left off after a rotation or if Android closed
         // the app, and shows sets logged from the rest notification while you were away.
-        session = training.resumeOrStart(Catalog.PUSH_DAY);
+        session = training.resumeOrStart(training.nextPlan());
         rest = AppContainer.from(this).restController();
         quickLog = AppContainer.from(this).quickLog(rest);
         setViews.clear();

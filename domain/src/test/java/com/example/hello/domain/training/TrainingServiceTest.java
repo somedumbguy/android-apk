@@ -197,4 +197,32 @@ public class TrainingServiceTest {
         assertTrue(t.service.complete(s).newRecords.isEmpty());
         assertEquals(250, t.service.bestE1rm(Catalog.BENCH).getAsDouble(), 0);
     }
+
+    @Test
+    public void nextPlanFollowsTheProgramFromTheLastLoggedWorkout() {
+        assertEquals(Catalog.WORKOUT_A, t.service.nextPlan());
+
+        WorkoutSession a = t.service.startSession(t.service.nextPlan());
+        a.entries.get(0).work.get(0).complete();
+        t.service.complete(a);
+        assertEquals(Catalog.WORKOUT_B, t.service.nextPlan());
+
+        WorkoutSession b = t.service.startSession(t.service.nextPlan());
+        b.entries.get(0).work.get(0).complete();
+        t.service.complete(b);
+        assertEquals(Catalog.WORKOUT_A, t.service.nextPlan());
+    }
+
+    @Test
+    public void switchingProgramChangesTheNextPlan() {
+        t.service.setProgram(Catalog.PUSH);
+        assertEquals(Catalog.PUSH, t.service.program());
+        assertEquals(Catalog.PUSH_DAY, t.service.nextPlan());
+    }
+
+    @Test
+    public void anUnknownSavedProgramFallsBackToTheDefault() {
+        t.settings.setProgramId("retired_program");
+        assertEquals(Catalog.DEFAULT_PROGRAM, t.service.program());
+    }
 }
