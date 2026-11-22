@@ -13,8 +13,11 @@ public final class HomeState {
         public final boolean fresh;
         public final String next;
         public final String nextDate;
+        /** "EST. 1RM · 216 LB", or null when there's no estimate. */
+        public final String e1rm;
 
-        RecordCard(String lift, String weight, String when, boolean fresh, String next, String nextDate) {
+        RecordCard(String lift, String weight, String when, boolean fresh, String next, String nextDate, String e1rm) {
+            this.e1rm = e1rm;
             this.lift = lift;
             this.weight = weight;
             this.when = when;

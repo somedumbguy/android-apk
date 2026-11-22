@@ -77,4 +77,9 @@ public final class Formats {
     public static String percentChange(int pct) {
         return (pct >= 0 ? "▲ " : "▼ ") + Math.abs(pct) + "%";
     }
+
+    /** Rounded to the nearest pound, for estimates: "221 lb". */
+    public static String wholeLb(double w) {
+        return Math.round(w) + " lb";
+    }
 }

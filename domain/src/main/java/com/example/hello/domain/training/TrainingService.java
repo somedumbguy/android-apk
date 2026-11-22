@@ -11,6 +11,7 @@ import com.example.hello.domain.model.CompletedWorkout;
 import com.example.hello.domain.model.Exercise;
 import com.example.hello.domain.model.PersonalRecord;
 import com.example.hello.domain.model.SetRecord;
+import com.example.hello.domain.model.Strength;
 import com.example.hello.domain.model.Suggestion;
 import com.example.hello.domain.model.WorkoutPlan;
 import com.example.hello.domain.plates.PlateMath;
@@ -26,12 +27,16 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalDouble;
 
 /**
  * The app's training use cases: what to lift next, PR forecasts, starting and finishing
  * workouts. All dependencies are passed in, so it runs in tests with fakes and a fixed clock.
  */
 public final class TrainingService {
+    /** Ignore rounding noise when comparing estimated maxes. */
+    private static final double E1RM_EPSILON = 0.01;
+
     private final WorkoutRepository workouts;
     private final SettingsRepository settings;
     private final ActiveWorkoutStore activeWorkout;
@@ -79,6 +84,10 @@ public final class TrainingService {
 
     public Optional<PersonalRecord> personalRecord(Exercise e) {
         return workouts.personalRecord(e);
+    }
+
+    public OptionalDouble bestE1rm(Exercise e) {
+        return workouts.bestE1rm(e);
     }
 
     /** True when the prescribed weight beats the current PR. */
@@ -183,9 +192,19 @@ public final class TrainingService {
             workouts.saveSession(e, done, fails);
 
             double currentPr = personalRecord(e).map(r -> r.weight).orElse(0.0);
-            if (best > currentPr) {
+            boolean heaviest = best > currentPr;
+            if (heaviest) {
                 workouts.savePersonalRecord(new PersonalRecord(e.id, best, clock.instant()));
-                records.add(new WorkoutSummary.NewRecord(e, best));
+                records.add(new WorkoutSummary.NewRecord(e, WorkoutSummary.NewRecord.Kind.HEAVIEST, best));
+            }
+            // A higher estimated max counts too (e.g. more reps at the same weight), but one set
+            // shouldn't announce two records: a heaviest-weight PR already covers it.
+            double e1rm = Strength.bestE1rm(done);
+            if (e1rm > bestE1rm(e).orElse(0) + E1RM_EPSILON) {
+                workouts.saveBestE1rm(e, e1rm);
+                if (!heaviest) {
+                    records.add(new WorkoutSummary.NewRecord(e, WorkoutSummary.NewRecord.Kind.ESTIMATED_1RM, e1rm));
+                }
             }
         }
 

@@ -7,6 +7,7 @@ import com.example.hello.domain.model.SetRecord;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalDouble;
 
 /** Where training history is stored. Implemented on the phone now, by a server later. */
 public interface WorkoutRepository {
@@ -22,6 +23,11 @@ public interface WorkoutRepository {
     void saveSession(Exercise exercise, List<SetRecord> sets, int consecutiveFails);
 
     void savePersonalRecord(PersonalRecord record);
+
+    /** The best estimated one-rep max ever achieved, if any. */
+    OptionalDouble bestE1rm(Exercise exercise);
+
+    void saveBestE1rm(Exercise exercise, double e1rm);
 
     void recordWorkout(CompletedWorkout workout);
 

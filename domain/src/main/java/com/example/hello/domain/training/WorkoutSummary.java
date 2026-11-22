@@ -9,11 +9,21 @@ public final class WorkoutSummary {
 
     /** A personal record set during the workout. */
     public static final class NewRecord {
+        public enum Kind {
+            /** Heaviest weight ever lifted. */
+            HEAVIEST,
+            /** Best estimated one-rep max, e.g. more reps at the same weight. */
+            ESTIMATED_1RM
+        }
+
         public final Exercise exercise;
+        public final Kind kind;
+        /** The weight, or the estimated max, in lb. */
         public final double weight;
 
-        public NewRecord(Exercise exercise, double weight) {
+        public NewRecord(Exercise exercise, Kind kind, double weight) {
             this.exercise = exercise;
+            this.kind = kind;
             this.weight = weight;
         }
     }

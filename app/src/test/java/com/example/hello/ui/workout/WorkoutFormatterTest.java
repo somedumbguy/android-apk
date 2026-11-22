@@ -50,7 +50,10 @@ public class WorkoutFormatterTest {
         assertTrue(WorkoutFormatter.summaryMessage(none).startsWith("2,850 lb lifted across 3 sets."));
 
         WorkoutSummary pr = new WorkoutSummary(
-                2850, 3, Collections.singletonList(new WorkoutSummary.NewRecord(Catalog.BENCH, 190)));
+                2850,
+                3,
+                Collections.singletonList(
+                        new WorkoutSummary.NewRecord(Catalog.BENCH, WorkoutSummary.NewRecord.Kind.HEAVIEST, 190)));
         assertEquals("New PR! 🏆", WorkoutFormatter.summaryTitle(pr));
         assertTrue(WorkoutFormatter.summaryMessage(pr).contains("Bench Press · 190 lb"));
     }
@@ -72,5 +75,17 @@ public class WorkoutFormatterTest {
                 "Bench Press · set 2 of 3 · 190 lb × 5",
                 WorkoutFormatter.nextSet(s, s.entries.get(0).work.get(1)));
         assertEquals("", WorkoutFormatter.nextSet(s, new SetEntry(1, 1, false)));
+    }
+
+    @Test
+    public void estimatedMaxRecordsAreLabelledAndRounded() {
+        assertEquals(
+                "Bench Press · est. 1RM 228 lb",
+                WorkoutFormatter.record(new WorkoutSummary.NewRecord(
+                        Catalog.BENCH, WorkoutSummary.NewRecord.Kind.ESTIMATED_1RM, 228.33)));
+        assertEquals(
+                "Bench Press · 192.5 lb",
+                WorkoutFormatter.record(
+                        new WorkoutSummary.NewRecord(Catalog.BENCH, WorkoutSummary.NewRecord.Kind.HEAVIEST, 192.5)));
     }
 }

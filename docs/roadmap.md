@@ -35,13 +35,14 @@ items here in the same pull request that delivers them.
 
 - [ ] **Programs:** A/B alternation (StrongLifts-style), an exercise library, and a
       3-question onboarding that picks a program.
-- [ ] **Better PRs:** estimated one-rep max and rep PRs, not just heaviest weight.
+- [x] **Better PRs:** estimated one-rep max (Epley) on the record cards, and more reps at
+      the same weight now counts as a PR (v0.11).
 - [ ] **Your gym's equipment:** kg or lb, bar weight, available plates and microplates.
 - [ ] **Starting weights from one test set.**
 - [ ] **Health Connect export.**
 - [ ] **Set the weekly goal** in the app (currently 3).
 - [ ] **Full set-by-set history** in Room, for charts, history screens and export.
-- [ ] **Haptic feedback** when checking off a set.
+- [x] **Haptic feedback** when checking off a set (v0.11).
 - [ ] **Accessibility:** screen-reader labels for custom views, large-font layouts,
       contrast checks.
 - [ ] **Move UI text to resources** for translation.
@@ -70,6 +71,9 @@ items here in the same pull request that delivers them.
 - [ ] Backend for sign-in, sync and backup (see docs/security.md).
 
 ## Waiting on you
+
+- Automatic builds to your phone and crash reporting need a Firebase project or Google Play
+  Console account. Tell me which, and I'll wire it up.
 
 - Package name (see section 1).
 - GitHub settings: allow auto-merge, protect `main` with the **check** requirement,

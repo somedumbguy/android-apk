@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalDouble;
 
 /** A WorkoutRepository held in memory, for tests. */
 public final class InMemoryWorkoutRepository implements WorkoutRepository {
@@ -20,6 +21,7 @@ public final class InMemoryWorkoutRepository implements WorkoutRepository {
     private final Map<String, Integer> fails = new HashMap<>();
     private final Map<String, PersonalRecord> records = new HashMap<>();
     private final List<CompletedWorkout> history = new ArrayList<>();
+    private final Map<String, Double> e1rms = new HashMap<>();
 
     // ---- Test setup helpers ----
 
@@ -43,6 +45,11 @@ public final class InMemoryWorkoutRepository implements WorkoutRepository {
 
     public InMemoryWorkoutRepository withPr(Exercise e, double weight, Instant at) {
         records.put(e.id, new PersonalRecord(e.id, weight, at));
+        return this;
+    }
+
+    public InMemoryWorkoutRepository withE1rm(Exercise e, double e1rm) {
+        e1rms.put(e.id, e1rm);
         return this;
     }
 
@@ -80,6 +87,17 @@ public final class InMemoryWorkoutRepository implements WorkoutRepository {
     @Override
     public void savePersonalRecord(PersonalRecord r) {
         records.put(r.exerciseId, r);
+    }
+
+    @Override
+    public OptionalDouble bestE1rm(Exercise e) {
+        Double v = e1rms.get(e.id);
+        return v == null ? OptionalDouble.empty() : OptionalDouble.of(v);
+    }
+
+    @Override
+    public void saveBestE1rm(Exercise e, double e1rm) {
+        e1rms.put(e.id, e1rm);
     }
 
     @Override
