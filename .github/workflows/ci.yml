@@ -43,7 +43,7 @@ jobs:
       - name: Install Android SDK packages
         run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37.0" "build-tools;36.0.0" > /dev/null
 
-      - name: Check (format, duplication, warnings, lint, tests, architecture, coverage)
+      - name: Check (format, duplication, warnings, lint, tests, architecture, coverage, screenshots)
         run: ./gradlew check assembleDebug
 
       - name: Upload reports
@@ -52,6 +52,14 @@ jobs:
         with:
           name: reports
           path: "**/build/reports/"
+          retention-days: 14
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: screenshots
+          path: app/build/screenshots/
           retention-days: 14
 
       - name: Upload debug APK

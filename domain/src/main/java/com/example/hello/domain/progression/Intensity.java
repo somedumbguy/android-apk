@@ -9,7 +9,7 @@ import com.example.hello.domain.model.Exercise;
  */
 public enum Intensity {
     CRUISE("Cruise", "Small, steady jumps. You'll rarely miss a rep.", 2.5, 0.05),
-    BUILD("Build", "Classic linear progression, StrongLifts 5×5 style: +5 lb a session, +10 on deadlifts.", 5, 0.15),
+    BUILD("Build", "Classic 5×5-style linear progression: +5 lb a session, +10 on deadlifts.", 5, 0.15),
     SEND_IT("Send it", "Big jumps every session. Expect more misses and resets.", 7.5, 0.35);
 
     public final String label;

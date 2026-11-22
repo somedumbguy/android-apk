@@ -96,6 +96,7 @@ public final class HomePresenter {
                 a.last7DaysVolume(),
                 Formats.last7DayLetters(today, locale),
                 Formats.thousands(a.totalVolume()),
-                a.volumeChangePct.isPresent() ? Formats.percentChange(a.volumeChangePct.getAsInt()) : null);
+                a.volumeChangePct.isPresent() ? Formats.percentChange(a.volumeChangePct.getAsInt()) : null,
+                a.volumeChangePct.orElse(0) >= 0);
     }
 }

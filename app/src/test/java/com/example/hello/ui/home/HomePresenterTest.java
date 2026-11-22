@@ -96,6 +96,7 @@ public class HomePresenterTest {
         assertEquals(3, s.workoutsDone);
         assertEquals("3,000", s.totalVolume);
         assertEquals("▲ 11%", s.change);
+        assertTrue(s.changeUp);
         assertFalse(s.demo);
     }
 

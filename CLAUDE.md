@@ -42,6 +42,12 @@ formatting.
   first, and wire it in `AppContainer`, the way `MockAuthProvider` works.
 - **Prefer deterministic code to AI** wherever an answer can be calculated.
 
+## Seeing the screens
+
+`./gradlew :app:testDebugUnitTest --tests '*ScreenshotTest*'` renders every screen to
+`app/build/screenshots/`. Look at them after any UI change; CI attaches them to each pull
+request. Add a test there for each new screen.
+
 ## Changing a rule
 
 Rules change only when the design deliberately changes. Edit the rule and its reason in
