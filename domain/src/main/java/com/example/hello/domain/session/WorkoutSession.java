@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /** A workout in progress. Holds all set state so the screen only has to draw it. */
 public final class WorkoutSession {
@@ -37,6 +38,14 @@ public final class WorkoutSession {
         int n = 0;
         for (ExerciseEntry e : entries) n += e.work.size();
         return n;
+    }
+
+    /** The first work set not yet done, in workout order, if any. */
+    public Optional<SetEntry> nextPendingWorkSet() {
+        for (ExerciseEntry e : entries) {
+            for (SetEntry s : e.work) if (!s.isDone()) return Optional.of(s);
+        }
+        return Optional.empty();
     }
 
     /** The exercise a set belongs to, or null. */

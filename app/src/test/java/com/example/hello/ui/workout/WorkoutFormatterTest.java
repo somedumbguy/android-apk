@@ -62,4 +62,15 @@ public class WorkoutFormatterTest {
                 "4 exercises · 12 sets · Build",
                 WorkoutFormatter.subtitle(t.service.startSession(Catalog.PUSH_DAY), Intensity.BUILD));
     }
+
+    @Test
+    public void nextSetDescribesTheUpcomingSet() {
+        TestTraining t = new TestTraining();
+        t.workouts.withCleanSession(Catalog.BENCH, 185);
+        com.example.hello.domain.session.WorkoutSession s = t.service.startSession(Catalog.PUSH_DAY);
+        assertEquals(
+                "Bench Press · set 2 of 3 · 190 lb × 5",
+                WorkoutFormatter.nextSet(s, s.entries.get(0).work.get(1)));
+        assertEquals("", WorkoutFormatter.nextSet(s, new SetEntry(1, 1, false)));
+    }
 }

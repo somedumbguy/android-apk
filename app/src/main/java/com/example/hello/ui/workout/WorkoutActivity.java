@@ -1,8 +1,11 @@
 package com.example.hello.ui.workout;
 
+import android.Manifest;
 import android.app.AlertDialog;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -21,6 +24,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.activity.ComponentActivity;
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.ContextCompat;
 import com.example.hello.app.AppContainer;
 import com.example.hello.domain.catalog.Catalog;
 import com.example.hello.domain.plates.PlateMath;
@@ -66,7 +72,10 @@ public class WorkoutActivity extends ComponentActivity {
     private final Map<SetEntry, SetViews> setViews = new HashMap<>();
 
     private final Handler handler = new Handler(Looper.getMainLooper());
-    private final RestTimer rest = new RestTimer(SystemClock::elapsedRealtime);
+    private RestController rest;
+    private QuickLog quickLog;
+    private ActivityResultLauncher<String> notificationPermission;
+    private boolean askedForNotifications;
     private FrameLayout restBar;
     private TextView restTime;
     private View restFill;
@@ -83,8 +92,10 @@ public class WorkoutActivity extends ComponentActivity {
         training = container.training;
         plates = container.plates;
         clock = container.clock;
-        // Picks up where you left off after a rotation or if Android closed the app.
-        session = training.resumeOrStart(Catalog.PUSH_DAY);
+        rest = container.restController();
+        quickLog = container.quickLog(rest);
+        notificationPermission =
+                registerForActivityResult(new ActivityResultContracts.RequestPermission(), granted -> {});
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -92,8 +103,25 @@ public class WorkoutActivity extends ComponentActivity {
                 confirmLeave();
             }
         });
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Reload every time: picks up where you left off after a rotation or if Android closed
+        // the app, and shows sets logged from the rest notification while you were away.
+        session = training.resumeOrStart(Catalog.PUSH_DAY);
+        rest = AppContainer.from(this).restController();
+        quickLog = AppContainer.from(this).quickLog(rest);
+        setViews.clear();
         setContentView(buildScreen());
+        if (rest.isRunning()) showRestBar();
+    }
+
+    @Override
+    protected void onPause() {
+        handler.removeCallbacks(tick);
+        super.onPause();
     }
 
     @Override
@@ -313,8 +341,10 @@ public class WorkoutActivity extends ComponentActivity {
                 .setInterpolator(new OvershootInterpolator(3f))
                 .start();
         if (!set.warmup) {
-            ExerciseEntry entry = session.entryFor(set);
-            startRest(entry == null ? 90 : entry.exercise.restSeconds);
+            askForNotificationsOnce();
+            quickLog.startRestAfter(session, set);
+            if (rest.isRunning()) showRestBar();
+            else stopRest();
         }
     }
 
@@ -331,13 +361,23 @@ public class WorkoutActivity extends ComponentActivity {
                 .show();
     }
 
-    private void startRest(int seconds) {
+    private void showRestBar() {
         handler.removeCallbacks(hideRest);
         handler.removeCallbacks(tick);
-        rest.start(seconds);
         restTime.setTextColor(Palette.TEXT);
         restBar.setVisibility(View.VISIBLE);
         handler.post(tick);
+    }
+
+    /** The rest notification needs permission on Android 13+; ask the first time a rest starts. */
+    private void askForNotificationsOnce() {
+        if (askedForNotifications) return;
+        askedForNotifications = true;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                && ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                        != PackageManager.PERMISSION_GRANTED) {
+            notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS);
+        }
     }
 
     private void stopRest() {
@@ -384,6 +424,7 @@ public class WorkoutActivity extends ComponentActivity {
     private void confirmLeave() {
         if (!session.hasAnySetDone()) {
             training.discard();
+            rest.stop();
             finish();
             return;
         }
@@ -393,6 +434,7 @@ public class WorkoutActivity extends ComponentActivity {
                 .setPositiveButton("Keep for later", (d, w) -> finish())
                 .setNeutralButton("Discard", (d, w) -> {
                     training.discard();
+                    rest.stop();
                     finish();
                 })
                 .setNegativeButton("Cancel", null)

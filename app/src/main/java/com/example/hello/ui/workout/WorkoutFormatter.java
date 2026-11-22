@@ -3,6 +3,7 @@ package com.example.hello.ui.workout;
 import com.example.hello.domain.model.Weights;
 import com.example.hello.domain.plates.PlateMath;
 import com.example.hello.domain.progression.Intensity;
+import com.example.hello.domain.session.ExerciseEntry;
 import com.example.hello.domain.session.SetEntry;
 import com.example.hello.domain.session.WorkoutSession;
 import com.example.hello.domain.training.WorkoutSummary;
@@ -48,6 +49,15 @@ final class WorkoutFormatter {
 
     static String repChoiceLabel(int reps, int target) {
         return reps + (reps == 1 ? " rep" : " reps") + (reps == target ? "  (target)" : "");
+    }
+
+    /** "Bench Press · set 2 of 3 · 190 lb × 5", for the rest notification. */
+    static String nextSet(WorkoutSession session, SetEntry set) {
+        ExerciseEntry entry = session.entryFor(set);
+        if (entry == null) return "";
+        int index = entry.work.indexOf(set) + 1;
+        return entry.exercise.name + " · set " + index + " of " + entry.work.size() + " · " + Formats.lb(set.weight)
+                + " × " + set.target;
     }
 
     static String summaryTitle(WorkoutSummary s) {

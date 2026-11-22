@@ -6,6 +6,7 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noFields;
 import com.example.hello.app.AppContainer;
 import com.example.hello.auth.MockAuthProvider;
 import com.example.hello.data.SharedPrefsActiveWorkoutStore;
+import com.example.hello.data.SharedPrefsRestStore;
 import com.example.hello.data.SharedPrefsSettingsRepository;
 import com.example.hello.data.SharedPrefsWorkoutRepository;
 import com.example.hello.domain.forecast.Forecaster;
@@ -15,6 +16,7 @@ import com.example.hello.domain.history.WorkoutRepository;
 import com.example.hello.domain.plates.PlateMath;
 import com.example.hello.domain.progression.ProgressionEngine;
 import com.example.hello.domain.training.TrainingService;
+import com.example.hello.ui.workout.RestNotifications;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
@@ -81,6 +83,10 @@ public class ArchitectureTest {
                 .resideInAPackage(ROOT + ".ui.format..")
                 .or()
                 .haveSimpleName("RestTimer")
+                .or()
+                .haveSimpleName("RestController")
+                .or()
+                .haveSimpleName("QuickLog")
                 .should()
                 .dependOnClassesThat()
                 .resideInAnyPackage("android..", "androidx..")
@@ -129,6 +135,10 @@ public class ArchitectureTest {
                 .callConstructor(SharedPrefsSettingsRepository.class, android.content.SharedPreferences.class)
                 .orShould()
                 .callConstructor(SharedPrefsActiveWorkoutStore.class, android.content.SharedPreferences.class)
+                .orShould()
+                .callConstructor(SharedPrefsRestStore.class, android.content.SharedPreferences.class)
+                .orShould()
+                .callConstructor(RestNotifications.class, android.content.Context.class)
                 .orShould()
                 .callConstructor(MockAuthProvider.class, com.example.hello.auth.UserStore.class)
                 .orShould()
