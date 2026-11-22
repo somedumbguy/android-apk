@@ -52,8 +52,10 @@ items here in the same pull request that delivers them.
 
 ## 5. AI features (on-device first)
 
-- [ ] **Voice logging:** Android's on-device speech recognition, plus a deterministic
-      parser for "Squat, 3 sets of 5 at 225". No AI model needed.
+- [x] **Voice logging:** Android's speech recognition (on-device where available) plus a
+      deterministic parser for "squat 3 sets of 5 at 280", "bench 190 for 5", "did 4". No AI
+      model needed (v0.14).
+- [ ] **Log a different weight** than prescribed, by voice or tap.
 - [ ] **Camera equipment recognition:** an on-device image classifier (ML Kit / LiteRT),
       with a cloud model only for equipment it doesn't know.
 - [ ] Optional: Gemini Nano or Gemma on supported phones for messy phrasing.

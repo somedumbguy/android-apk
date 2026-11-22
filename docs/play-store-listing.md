@@ -47,8 +47,10 @@ Google Play doesn't allow emoji, all caps, or claims like "Best" or "#1" in titl
 > • Forecasts for your next plate milestone: 135, 225, 315, 405 and beyond
 > • A PR-attempt alert when today's weight beats your best
 >
-> **LOG A SET IN ONE TAP**
+> **LOG A SET IN ONE TAP, OR JUST SAY IT**
 > • Tap a set to mark it done as planned. Tap the reps only when something changes
+> • Just say it: "Squat, 3 sets of 5" and your sets are logged
+> • Log your next set straight from the lock screen while you rest
 > • The rest timer starts automatically and buzzes when you're ready
 > • Plates per side and warm-up sets, worked out for you
 > • Linear progression for barbell lifts, and double progression (like 3×8–12) for dumbbells and machines
@@ -61,12 +63,11 @@ Google Play doesn't allow emoji, all caps, or claims like "Best" or "#1" in titl
 ### Lines to add when these features ship
 
 > • **Point your camera at a machine** and Overload adds it to your workout
-> • **Just say it:** "Squat, 3 sets of 5 at 225", and your sets are logged
 
 ## Before launch
 
-- [ ] **Streaks and weekly goals** still show demo data (`SeedData.demo()`). Build them for
-      real, or remove the "Stay consistent" section.
+- [x] **Streaks and weekly goals** are calculated from real workouts (v0.9); demo data is
+      labelled and disappears after the first workout.
 - [ ] Search Google Play for apps with similar names, and do a trademark search for "Overload".
 - [ ] Don't name other apps or programs (for example "StrongLifts"). Google Play can reject
       listings that do. "5×5-style" is fine.

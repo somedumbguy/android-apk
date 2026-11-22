@@ -69,6 +69,11 @@ public class MainActivity extends ComponentActivity implements HomeView.Listener
     }
 
     @Override
+    public void onVoiceTapped() {
+        startActivity(new Intent(this, WorkoutActivity.class).putExtra(WorkoutActivity.EXTRA_LISTEN, true));
+    }
+
+    @Override
     public void onPlanTapped() {
         PlanSheet.show(this, container.planPresenter(), this::render);
     }

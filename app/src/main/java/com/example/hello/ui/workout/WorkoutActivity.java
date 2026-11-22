@@ -2,6 +2,8 @@ package com.example.hello.ui.workout;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
@@ -12,6 +14,7 @@ import android.os.Looper;
 import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.speech.RecognizerIntent;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
@@ -20,6 +23,7 @@ import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -35,12 +39,15 @@ import com.example.hello.domain.session.SetEntry;
 import com.example.hello.domain.session.WorkoutSession;
 import com.example.hello.domain.training.TrainingService;
 import com.example.hello.domain.training.WorkoutSummary;
+import com.example.hello.domain.voice.LogParser;
 import com.example.hello.ui.common.Cards;
 import com.example.hello.ui.common.Palette;
 import com.example.hello.ui.common.Screens;
 import com.example.hello.ui.common.Ui;
 import com.example.hello.ui.format.Formats;
+import com.example.hello.ui.widget.MicView;
 import java.time.Clock;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,6 +57,9 @@ import java.util.Map;
  * what you actually did.
  */
 public class WorkoutActivity extends ComponentActivity {
+    /** Start listening for a spoken log as soon as the screen opens. */
+    public static final String EXTRA_LISTEN = "listen";
+
     private static final long TICK_MS = 200;
     private static final long HIDE_AFTER_REST_MS = 2500;
     private static final long[] REST_DONE_BUZZ = {0, 220, 120, 220};
@@ -76,6 +86,7 @@ public class WorkoutActivity extends ComponentActivity {
     private QuickLog quickLog;
     private ActivityResultLauncher<String> notificationPermission;
     private boolean askedForNotifications;
+    private ActivityResultLauncher<Intent> speech;
     private FrameLayout restBar;
     private TextView restTime;
     private View restFill;
@@ -96,6 +107,12 @@ public class WorkoutActivity extends ComponentActivity {
         quickLog = container.quickLog(rest);
         notificationPermission =
                 registerForActivityResult(new ActivityResultContracts.RequestPermission(), granted -> {});
+        speech = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            Intent data = result.getData();
+            if (result.getResultCode() != RESULT_OK || data == null) return;
+            ArrayList<String> heard = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            if (heard != null && !heard.isEmpty()) onHeard(heard.get(0));
+        });
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -116,6 +133,11 @@ public class WorkoutActivity extends ComponentActivity {
         setViews.clear();
         setContentView(buildScreen());
         if (rest.isRunning()) showRestBar();
+        // Opened from "Just say it" on the home screen: start listening straight away, once.
+        if (getIntent().getBooleanExtra(EXTRA_LISTEN, false)) {
+            getIntent().removeExtra(EXTRA_LISTEN);
+            listen();
+        }
     }
 
     @Override
@@ -181,6 +203,13 @@ public class WorkoutActivity extends ComponentActivity {
         clock.setBase(SystemClock.elapsedRealtime() - elapsed);
         clock.start();
         row.addView(clock);
+
+        MicView mic = new MicView(this);
+        mic.setContentDescription("Log by voice");
+        mic.setOnClickListener(v -> listen());
+        LinearLayout.LayoutParams micLp = new LinearLayout.LayoutParams(dp(40), dp(40));
+        micLp.leftMargin = dp(14);
+        row.addView(mic, micLp);
         return row;
     }
 
@@ -374,6 +403,45 @@ public class WorkoutActivity extends ComponentActivity {
     }
 
     /** The rest notification needs permission on Android 13+; ask the first time a rest starts. */
+    // ---- Voice logging ----
+
+    /** Android's own speech screen (on-device where available); typing if there isn't one. */
+    private void listen() {
+        Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+                .putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                .putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true)
+                .putExtra(RecognizerIntent.EXTRA_PROMPT, "Say a set, like \u201csquat 3 sets of 5\u201d");
+        try {
+            speech.launch(i);
+        } catch (ActivityNotFoundException noSpeech) {
+            typeInstead();
+        }
+    }
+
+    private void typeInstead() {
+        EditText input = new EditText(this);
+        input.setHint("squat 3 sets of 5");
+        input.setSingleLine(true);
+        new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert)
+                .setTitle("Type your set")
+                .setView(input)
+                .setPositiveButton("Log", (d, w) -> onHeard(input.getText().toString()))
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void onHeard(String said) {
+        VoiceLogger.Result r = VoiceLogger.apply(session, LogParser.parse(said));
+        if (r.logged) {
+            training.saveProgress(session);
+            setViews.clear();
+            setContentView(buildScreen());
+            quickLog.startRestAfter(session, r.lastSet);
+            if (rest.isRunning()) showRestBar();
+        }
+        Ui.toast(this, r.message);
+    }
+
     private void askForNotificationsOnce() {
         if (askedForNotifications) return;
         askedForNotifications = true;
