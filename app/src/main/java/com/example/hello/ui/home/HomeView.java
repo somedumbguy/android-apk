@@ -176,7 +176,7 @@ public final class HomeView {
         reason.setPadding(0, Ui.dp(c, 14), 0, 0);
         card.addView(reason);
 
-        Button start = Ui.primaryButton(c, "Start workout   →");
+        Button start = Ui.primaryButton(c, t.action);
         start.setOnClickListener(v -> listener.onStartWorkout());
         card.addView(start, Ui.matchWidth(c, 56, 22));
         return card;

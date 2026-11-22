@@ -2,6 +2,7 @@ package com.example.hello.domain.training;
 
 import com.example.hello.domain.forecast.Forecast;
 import com.example.hello.domain.forecast.Forecaster;
+import com.example.hello.domain.history.ActiveWorkoutStore;
 import com.example.hello.domain.history.ActivitySummary;
 import com.example.hello.domain.history.SettingsRepository;
 import com.example.hello.domain.history.WorkoutRepository;
@@ -14,9 +15,11 @@ import com.example.hello.domain.plates.PlateMath;
 import com.example.hello.domain.progression.Intensity;
 import com.example.hello.domain.progression.ProgressionEngine;
 import com.example.hello.domain.session.ExerciseEntry;
+import com.example.hello.domain.session.SessionCodec;
 import com.example.hello.domain.session.SetEntry;
 import com.example.hello.domain.session.WorkoutSession;
 import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +32,7 @@ import java.util.Optional;
 public final class TrainingService {
     private final WorkoutRepository workouts;
     private final SettingsRepository settings;
+    private final ActiveWorkoutStore activeWorkout;
     private final ProgressionEngine engine;
     private final Forecaster forecaster;
     private final PlateMath plates;
@@ -37,12 +41,14 @@ public final class TrainingService {
     public TrainingService(
             WorkoutRepository workouts,
             SettingsRepository settings,
+            ActiveWorkoutStore activeWorkout,
             ProgressionEngine engine,
             Forecaster forecaster,
             PlateMath plates,
             Clock clock) {
         this.workouts = workouts;
         this.settings = settings;
+        this.activeWorkout = activeWorkout;
         this.engine = engine;
         this.forecaster = forecaster;
         this.plates = plates;
@@ -103,7 +109,48 @@ public final class TrainingService {
             for (int r : s.reps()) work.add(new SetEntry(s.weight, r, false));
             entries.add(new ExerciseEntry(e, s, isPrAttempt(s), warmups, work));
         }
-        return new WorkoutSession(plan, entries);
+        return new WorkoutSession(plan, entries, clock.instant());
+    }
+
+    /**
+     * Today's in-progress workout if one was saved and still matches the prescription,
+     * otherwise a fresh one. A saved workout from another day is discarded.
+     */
+    public WorkoutSession resumeOrStart(WorkoutPlan plan) {
+        Optional<WorkoutSession> resumed = savedToday(plan);
+        if (resumed.isPresent()) return resumed.get();
+        activeWorkout.clear();
+        return startSession(plan);
+    }
+
+    /** True when there's a saved, unfinished workout from today for this plan. */
+    public boolean hasWorkoutInProgress(WorkoutPlan plan) {
+        return savedToday(plan).isPresent();
+    }
+
+    /** Saves the workout's progress; call after every change. Nothing done means nothing to keep. */
+    public void saveProgress(WorkoutSession session) {
+        if (session.hasAnySetDone()) activeWorkout.save(SessionCodec.encode(session));
+        else activeWorkout.clear();
+    }
+
+    /** Throws away the in-progress workout. */
+    public void discard() {
+        activeWorkout.clear();
+    }
+
+    /** Restores onto a session of its own, so a save that's rejected can't leak into another one. */
+    private Optional<WorkoutSession> savedToday(WorkoutPlan plan) {
+        return activeWorkout
+                .load()
+                .flatMap(saved -> SessionCodec.restore(saved, startSession(plan)))
+                .filter(s -> sameDay(s.startedAt, clock.instant()));
+    }
+
+    private boolean sameDay(Instant a, Instant b) {
+        return a.atZone(clock.getZone())
+                .toLocalDate()
+                .equals(b.atZone(clock.getZone()).toLocalDate());
     }
 
     /** Saves completed sets, updates stall counts and PRs, and returns a summary. */
@@ -139,6 +186,7 @@ public final class TrainingService {
         }
 
         if (sets > 0) workouts.addVolume(LocalDate.now(clock), volume);
+        activeWorkout.clear();
         return new WorkoutSummary(volume, sets, records);
     }
 }

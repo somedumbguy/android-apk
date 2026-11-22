@@ -80,7 +80,8 @@ public final class HomePresenter {
                 s.repsLabel(),
                 prAttempt,
                 prAttempt ? "🏆  PR ATTEMPT" : Formats.delta(s.delta),
-                s.reason);
+                s.reason,
+                training.hasWorkoutInProgress(Catalog.PUSH_DAY) ? "Resume workout   →" : "Start workout   →");
     }
 
     private HomeState.Stats stats(LocalDate today) {

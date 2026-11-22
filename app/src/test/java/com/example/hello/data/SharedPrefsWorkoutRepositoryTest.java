@@ -80,4 +80,14 @@ public class SharedPrefsWorkoutRepositoryTest {
         p.edit().putString("intensity", "WARP_SPEED").apply();
         assertEquals(Intensity.BUILD, new SharedPrefsSettingsRepository(p).intensity());
     }
+
+    @Test
+    public void activeWorkoutSnapshotSavesLoadsAndClears() {
+        SharedPrefsActiveWorkoutStore store = new SharedPrefsActiveWorkoutStore(new InMemorySharedPreferences());
+        assertFalse(store.load().isPresent());
+        store.save("1|0|Push Day|");
+        assertEquals("1|0|Push Day|", store.load().get());
+        store.clear();
+        assertFalse(store.load().isPresent());
+    }
 }

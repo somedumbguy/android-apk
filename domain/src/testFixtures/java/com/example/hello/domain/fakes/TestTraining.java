@@ -10,6 +10,7 @@ import java.time.Clock;
 public final class TestTraining {
     public final InMemoryWorkoutRepository workouts = new InMemoryWorkoutRepository();
     public final InMemorySettingsRepository settings = new InMemorySettingsRepository();
+    public final InMemoryActiveWorkoutStore activeWorkout = new InMemoryActiveWorkoutStore();
     public final Clock clock;
     public final TrainingService service;
 
@@ -20,6 +21,12 @@ public final class TestTraining {
     public TestTraining(Clock clock) {
         this.clock = clock;
         this.service = new TrainingService(
-                workouts, settings, ProgressionEngine.standard(), new Forecaster(clock), PlateMath.standard(), clock);
+                workouts,
+                settings,
+                activeWorkout,
+                ProgressionEngine.standard(),
+                new Forecaster(clock),
+                PlateMath.standard(),
+                clock);
     }
 }

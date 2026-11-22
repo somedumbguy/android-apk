@@ -92,4 +92,13 @@ public class HomePresenterTest {
         assertEquals(7, s.volumes.length);
         assertEquals("0", s.totalVolume);
     }
+
+    @Test
+    public void startButtonOffersToResumeAWorkoutInProgress() {
+        assertEquals("Start workout   →", presenter.present(USER).target.action);
+        com.example.hello.domain.session.WorkoutSession s = t.service.resumeOrStart(Catalog.PUSH_DAY);
+        s.entries.get(0).work.get(0).complete();
+        t.service.saveProgress(s);
+        assertEquals("Resume workout   →", presenter.present(USER).target.action);
+    }
 }

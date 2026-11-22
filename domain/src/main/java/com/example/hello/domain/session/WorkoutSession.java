@@ -1,6 +1,7 @@
 package com.example.hello.domain.session;
 
 import com.example.hello.domain.model.WorkoutPlan;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,15 +10,26 @@ import java.util.List;
 public final class WorkoutSession {
     public final WorkoutPlan plan;
     public final List<ExerciseEntry> entries;
+    public final Instant startedAt;
 
-    public WorkoutSession(WorkoutPlan plan, List<ExerciseEntry> entries) {
+    public WorkoutSession(WorkoutPlan plan, List<ExerciseEntry> entries, Instant startedAt) {
         this.plan = plan;
         this.entries = Collections.unmodifiableList(new ArrayList<>(entries));
+        this.startedAt = startedAt;
     }
 
     /** True once any work set has been checked off. */
     public boolean hasProgress() {
         for (ExerciseEntry e : entries) if (!e.completedWorkSets().isEmpty()) return true;
+        return false;
+    }
+
+    /** True once any set, warm-ups included, has been checked off. */
+    public boolean hasAnySetDone() {
+        for (ExerciseEntry e : entries) {
+            for (SetEntry s : e.warmups) if (s.isDone()) return true;
+            for (SetEntry s : e.work) if (s.isDone()) return true;
+        }
         return false;
     }
 
