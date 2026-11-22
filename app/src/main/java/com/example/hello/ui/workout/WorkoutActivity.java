@@ -13,6 +13,7 @@ import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.view.Gravity;
+import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -332,6 +333,10 @@ public class WorkoutActivity extends ComponentActivity {
         render(set);
         training.saveProgress(session);
         TextView check = setViews.get(set).check;
+        check.performHapticFeedback(
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                        ? HapticFeedbackConstants.CONFIRM
+                        : HapticFeedbackConstants.VIRTUAL_KEY);
         check.setScaleX(0.7f);
         check.setScaleY(0.7f);
         check.animate()

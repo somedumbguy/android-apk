@@ -6,6 +6,7 @@ import com.example.hello.domain.model.CompletedWorkout;
 import com.example.hello.domain.model.Exercise;
 import com.example.hello.domain.model.PersonalRecord;
 import com.example.hello.domain.model.SetRecord;
+import com.example.hello.domain.model.Strength;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalDouble;
 
 /** Stores training history on the phone, falling back to seed data for anything not yet logged. */
 public final class SharedPrefsWorkoutRepository implements WorkoutRepository {
@@ -70,6 +72,19 @@ public final class SharedPrefsWorkoutRepository implements WorkoutRepository {
     }
 
     @Override
+    public OptionalDouble bestE1rm(Exercise e) {
+        String v = prefs.getString(Keys.e1rm(e), null);
+        if (v != null) return OptionalDouble.of(Double.parseDouble(v));
+        List<SetRecord> seeded = seed.sessions.get(e.id);
+        return seeded == null ? OptionalDouble.empty() : OptionalDouble.of(Strength.bestE1rm(seeded));
+    }
+
+    @Override
+    public void saveBestE1rm(Exercise e, double e1rm) {
+        prefs.edit().putString(Keys.e1rm(e), String.valueOf(e1rm)).apply();
+    }
+
+    @Override
     public void recordWorkout(CompletedWorkout workout) {
         prefs.edit()
                 .putString(Keys.LOG, WorkoutLogCodec.append(prefs.getString(Keys.LOG, null), workout))
@@ -106,6 +121,10 @@ public final class SharedPrefsWorkoutRepository implements WorkoutRepository {
 
         static String prTime(Exercise e) {
             return PR_TIME + e.id;
+        }
+
+        static String e1rm(Exercise e) {
+            return "e1rm:" + e.id;
         }
     }
 }

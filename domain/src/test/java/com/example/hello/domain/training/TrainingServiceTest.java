@@ -164,4 +164,37 @@ public class TrainingServiceTest {
         assertEquals(0, summary.sets);
         assertFalse(t.workouts.hasLoggedWorkouts());
     }
+
+    @Test
+    public void moreRepsAtTheSameWeightIsAnEstimatedMaxRecord() {
+        t.workouts.withPr(Catalog.BENCH, 190, TestClocks.daysAgo(3)).withE1rm(Catalog.BENCH, 221.67);
+        WorkoutSession s = t.service.startSession(benchAndDb); // prescribes 190 × 5
+        s.entries.get(0).work.get(0).record(7); // 190 × 7
+        WorkoutSummary summary = t.service.complete(s);
+
+        assertEquals(1, summary.newRecords.size());
+        assertEquals(WorkoutSummary.NewRecord.Kind.ESTIMATED_1RM, summary.newRecords.get(0).kind);
+        assertEquals(234.33, summary.newRecords.get(0).weight, 0.01);
+        assertEquals(234.33, t.service.bestE1rm(Catalog.BENCH).getAsDouble(), 0.01);
+    }
+
+    @Test
+    public void aHeavierLiftAnnouncesOneRecordButStillUpdatesTheEstimate() {
+        WorkoutSession s = t.service.startSession(benchAndDb);
+        completeAll(s.entries.get(0)); // 190 × 5 beats the 185 PR
+        WorkoutSummary summary = t.service.complete(s);
+
+        assertEquals(1, summary.newRecords.size());
+        assertEquals(WorkoutSummary.NewRecord.Kind.HEAVIEST, summary.newRecords.get(0).kind);
+        assertEquals(221.67, t.service.bestE1rm(Catalog.BENCH).getAsDouble(), 0.01);
+    }
+
+    @Test
+    public void aLowerEstimateIsNotARecord() {
+        t.workouts.withPr(Catalog.BENCH, 200, TestClocks.daysAgo(3)).withE1rm(Catalog.BENCH, 250);
+        WorkoutSession s = t.service.startSession(benchAndDb);
+        completeAll(s.entries.get(0));
+        assertTrue(t.service.complete(s).newRecords.isEmpty());
+        assertEquals(250, t.service.bestE1rm(Catalog.BENCH).getAsDouble(), 0);
+    }
 }

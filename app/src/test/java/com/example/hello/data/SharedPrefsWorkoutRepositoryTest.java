@@ -126,4 +126,14 @@ public class SharedPrefsWorkoutRepositoryTest {
         store.clear();
         assertFalse(store.load().isPresent());
     }
+
+    @Test
+    public void estimatedMaxFallsBackToTheSeedThenUsesWhatsSaved() {
+        assertEquals(215.83, repo.bestE1rm(Catalog.BENCH).getAsDouble(), 0.01); // 185 × 5 seed
+        repo.saveBestE1rm(Catalog.BENCH, 230);
+        assertEquals(230, repo.bestE1rm(Catalog.BENCH).getAsDouble(), 0);
+        SharedPrefsWorkoutRepository empty =
+                new SharedPrefsWorkoutRepository(new InMemorySharedPreferences(), SeedData.empty(), TestClocks.fixed());
+        assertFalse(empty.bestE1rm(Catalog.BENCH).isPresent());
+    }
 }

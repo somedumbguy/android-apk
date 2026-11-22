@@ -64,7 +64,10 @@ public final class HomePresenter {
                     Formats.relative(pr.achievedAt, now),
                     Formats.isWithinDays(pr.achievedAt, now, FRESH_DAYS),
                     "NEXT · " + Weights.format(f.target) + " LB",
-                    "~" + Formats.shortDate(f.date, locale)));
+                    "~" + Formats.shortDate(f.date, locale),
+                    training.bestE1rm(e).isPresent()
+                            ? "EST. 1RM · " + Math.round(training.bestE1rm(e).getAsDouble()) + " LB"
+                            : null));
         }
         return out;
     }

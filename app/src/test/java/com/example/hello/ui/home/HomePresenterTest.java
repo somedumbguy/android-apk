@@ -116,4 +116,12 @@ public class HomePresenterTest {
         t.service.saveProgress(s);
         assertEquals("Resume workout   →", presenter.present(USER).target.action);
     }
+
+    @Test
+    public void recordCardsShowTheEstimatedMaxWhenKnown() {
+        t.workouts.withE1rm(Catalog.BENCH, 215.83);
+        HomeState s = presenter.present(USER);
+        assertEquals("EST. 1RM · 216 LB", s.records.get(2).e1rm);
+        assertEquals(null, s.records.get(0).e1rm); // deadlift has no estimate in this test
+    }
 }

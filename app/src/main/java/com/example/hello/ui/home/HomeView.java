@@ -120,6 +120,11 @@ public final class HomeView {
             w.setPadding(0, Ui.dp(c, 6), 0, 0);
             card.addView(w);
             card.addView(Ui.text(c, r.when, 12, r.fresh ? Palette.LIME : Palette.MUTED));
+            if (r.e1rm != null) {
+                TextView est = Ui.caps(c, r.e1rm, 10, Palette.MUTED);
+                est.setPadding(0, Ui.dp(c, 6), 0, 0);
+                card.addView(est);
+            }
 
             View divider = new View(c);
             divider.setBackgroundColor(Palette.STROKE);

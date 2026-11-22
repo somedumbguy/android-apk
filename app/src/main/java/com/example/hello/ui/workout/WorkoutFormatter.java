@@ -1,6 +1,5 @@
 package com.example.hello.ui.workout;
 
-import com.example.hello.domain.model.Weights;
 import com.example.hello.domain.plates.PlateMath;
 import com.example.hello.domain.progression.Intensity;
 import com.example.hello.domain.session.ExerciseEntry;
@@ -60,6 +59,14 @@ final class WorkoutFormatter {
                 + " × " + set.target;
     }
 
+    /** "Bench Press · 190 lb" or "Bench Press · est. 1RM 221 lb". */
+    static String record(WorkoutSummary.NewRecord r) {
+        String value = r.kind == WorkoutSummary.NewRecord.Kind.ESTIMATED_1RM
+                ? "est. 1RM " + Formats.wholeLb(r.weight)
+                : Formats.lb(r.weight);
+        return r.exercise.name + " · " + value;
+    }
+
     static String summaryTitle(WorkoutSummary s) {
         return s.newRecords.isEmpty() ? "Workout complete 💪" : "New PR! 🏆";
     }
@@ -72,13 +79,7 @@ final class WorkoutFormatter {
                 .append(s.sets == 1 ? " set." : " sets.");
         if (!s.newRecords.isEmpty()) {
             msg.append("\n\nNew personal records:");
-            for (WorkoutSummary.NewRecord r : s.newRecords) {
-                msg.append("\n🏆  ")
-                        .append(r.exercise.name)
-                        .append(" · ")
-                        .append(Weights.format(r.weight))
-                        .append(" lb");
-            }
+            for (WorkoutSummary.NewRecord r : s.newRecords) msg.append("\n🏆  ").append(record(r));
         }
         msg.append("\n\nYour next targets are ready on the home screen.");
         return msg.toString();
