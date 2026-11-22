@@ -67,6 +67,8 @@ public final class HomeState {
         public final String totalVolume;
         /** "▲ 12%", or null when there's no earlier week to compare with. */
         public final String change;
+        /** True when volume went up; a drop isn't shown as a win. */
+        public final boolean changeUp;
         /** "weeks in a row" or "week in a row". */
         public final String streakUnit;
         /** True while the stats are sample data; the view labels them. */
@@ -82,7 +84,8 @@ public final class HomeState {
                 double[] volumes,
                 String[] dayLetters,
                 String totalVolume,
-                String change) {
+                String change,
+                boolean changeUp) {
             this.streak = streak;
             this.streakUnit = streakUnit;
             this.demo = demo;
@@ -93,6 +96,7 @@ public final class HomeState {
             this.dayLetters = dayLetters;
             this.totalVolume = totalVolume;
             this.change = change;
+            this.changeUp = changeUp;
         }
     }
 

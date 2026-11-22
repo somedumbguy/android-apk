@@ -19,8 +19,8 @@ android {
         applicationId = "com.example.hello"
         minSdk = 26
         targetSdk = 36
-        versionCode = 9
-        versionName = "0.9"
+        versionCode = 10
+        versionName = "0.10"
     }
 
     signingConfigs {
@@ -45,6 +45,18 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    // Screenshot tests render real screens with Robolectric, which needs the app's resources.
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+        unitTests.all {
+            // Robolectric reaches into these JDK internals on Java 17+.
+            it.jvmArgs(
+                "--add-exports=java.base/jdk.internal.access=ALL-UNNAMED",
+                "--add-opens=java.base/java.io=ALL-UNNAMED",
+            )
+        }
+    }
+
     // Android Lint: any warning fails the build.
     lint {
         abortOnError = true
@@ -65,6 +77,7 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.archunit)
+    testImplementation(libs.robolectric)
     testImplementation(testFixtures(project(":domain")))
 }
 

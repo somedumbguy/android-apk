@@ -18,8 +18,11 @@ items here in the same pull request that delivers them.
 
 ## 2. See what's built
 
-- [ ] **Screenshot tests** (Roborazzi or Paparazzi): render every screen in CI so layout
-      bugs are caught without a phone.
+- [x] **Screenshot tests:** Robolectric renders every screen on a simulated phone; PNGs are
+      attached to each pull request (v0.10). Already caught a clipped records row and a
+      volume drop shown as a win.
+- [ ] **Compare screenshots against approved images** (e.g. Roborazzi), once rendering
+      proves identical between machines.
 
 ## 3. Ship builds automatically
 

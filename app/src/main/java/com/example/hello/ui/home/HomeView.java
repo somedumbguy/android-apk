@@ -41,6 +41,8 @@ public final class HomeView {
         LinearLayout content = Ui.column(c);
         int side = Ui.dp(c, SIDE_DP);
         content.setPadding(side, Ui.dp(c, 12), side, Ui.dp(c, 120));
+        // Let the records row scroll out to the screen edges instead of stopping at the padding.
+        content.setClipToPadding(false);
         root.addView(Screens.scroller(c, content));
 
         RingView ring = new RingView(c);
@@ -232,7 +234,12 @@ public final class HomeView {
         col.addView(Cards.numberWithUnit(c, s.totalVolume, 32, "lb", 16, Palette.TEXT, Palette.MUTED));
         col.addView(Ui.text(c, "Total volume lifted", 13, Palette.MUTED));
         top.addView(col, Ui.fill());
-        if (s.change != null) top.addView(Ui.chip(c, s.change, Palette.LIME, Palette.LIME_TINT));
+        if (s.change != null) {
+            top.addView(
+                    s.changeUp
+                            ? Ui.chip(c, s.change, Palette.LIME, Palette.LIME_TINT)
+                            : Ui.chip(c, s.change, Palette.MUTED, Palette.SURFACE_2));
+        }
         card.addView(top);
         card.addView(bars, Ui.matchWidth(c, 150, 20));
         return card;
